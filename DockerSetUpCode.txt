@@ -1,0 +1,1 @@
+docker run -d --name pgvector-db -e POSTGRES_USER=admin -e POSTGRES_PASSWORD=1234 -e POSTGRES_DB=fitderdb -p 5432:5432 pgvector/pgvector:pg17
