@@ -14,5 +14,7 @@ while True:
     if user_input == "end":
         break
     else:
-        gen_res(user_input, conn)
+        response_from_llm = gen_res(user_input, conn)
+        print("\n--- AI Answer ---")
+        print(response_from_llm)
         
