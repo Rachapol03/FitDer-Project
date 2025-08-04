@@ -3,3 +3,4 @@ sentence-transformers
 ollama
 google-generativeai
 python-dotenv
+pymongo
