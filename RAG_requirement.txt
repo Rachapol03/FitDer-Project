@@ -1,5 +1,0 @@
-psycopg2-binary
-sentence-transformers
-ollama
-google-generativeai
-python-dotenv
