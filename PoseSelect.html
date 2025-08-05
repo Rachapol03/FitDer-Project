@@ -254,13 +254,18 @@
 
         .exercise-info {
             flex: 1;
+            min-width: 0;
+            overflow: hidden;
         }
 
         .exercise-name {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 600;
             color: #ffffff;
             margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .exercise-subtitle {
@@ -268,13 +273,18 @@
             color: rgba(255, 255, 255, 0.6);
             font-weight: 400;
             margin-bottom: 8px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .exercise-meta {
             display: flex;
-            gap: 16px;
+            gap: 12px;
             font-size: 12px;
             color: rgba(255, 255, 255, 0.5);
+            white-space: nowrap;
+            overflow: hidden;
         }
 
         .exercise-actions {
@@ -544,8 +554,10 @@
                     <div class="exercise-card" data-category="strength">
                         <div class="exercise-icon">🏋️</div>
                         <div class="exercise-info">
-                            <div class="exercise-name">Squat</div>
-                            <div class="exercise-subtitle">Lower Body Strength</div>
+                            <div class="exercise-name">SideLyingLegLift</div>
+                            <div class="exercise-subtitle">Gluteus Medius
+
+                            </div>
                             <div class="exercise-meta">
                                 <span>15 reps</span>
                                 <span>3 sets</span>
@@ -553,7 +565,6 @@
                             </div>
                         </div>
                         <div class="exercise-actions">
-                            <div class="difficulty-badge difficulty-medium">Medium</div>
                             <button class="start-btn">▶️</button>
                         </div>
                     </div>
@@ -570,7 +581,6 @@
                             </div>
                         </div>
                         <div class="exercise-actions">
-                            <div class="difficulty-badge difficulty-easy">Easy</div>
                             <button class="start-btn">▶️</button>
                         </div>
                     </div>
@@ -638,7 +648,6 @@
                             </div>
                         </div>
                         <div class="exercise-actions">
-                            <div class="difficulty-badge difficulty-easy">Easy</div>
                             <button class="start-btn">▶️</button>
                         </div>
                     </div>
