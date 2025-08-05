@@ -4,3 +4,5 @@ ollama
 google-generativeai
 python-dotenv
 pymongo
+flask
+flask_cors
