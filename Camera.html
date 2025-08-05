@@ -54,7 +54,7 @@
         }
 
         .header {
-            height: 60px; /* ปรับขนาดความสูงให้แคบลง */
+            height: 60px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -66,7 +66,7 @@
         }
 
         .header-title {
-            font-size: 20px; /* ปรับขนาดฟอนต์ให้เล็กลง */
+            font-size: 20px;
             font-weight: 700;
             color: #ffffff;
             text-align: center;
@@ -109,13 +109,20 @@
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
         }
 
-        #cameraFeed {
+        #cameraFeed, #overlayCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
             object-fit: cover;
-            transform: scaleX(-1); /* Flip video horizontally */
+            transform: scaleX(-1);
         }
         
+        #overlayCanvas {
+            z-index: 10;
+        }
+
         .camera-placeholder {
             font-size: 20px;
             color: rgba(255, 255, 255, 0.5);
@@ -125,11 +132,11 @@
 
         .overlay-data {
             position: absolute;
-            top: 0; /* ขยับขึ้นไปด้านบน */
+            top: 0;
             left: 0;
             right: 0;
-            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.7), transparent); /* เปลี่ยน gradient ให้เหมาะสม */
-            padding: 10px 16px; /* ลด padding ลง */
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.7), transparent);
+            padding: 10px 16px;
             display: flex;
             justify-content: space-between;
             gap: 10px;
@@ -137,7 +144,7 @@
 
         .data-item {
             flex: 1;
-            padding: 8px 6px; /* ลด padding ลง */
+            padding: 8px 6px;
             background: rgba(255, 255, 255, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.15);
             border-radius: 12px;
@@ -145,12 +152,12 @@
             backdrop-filter: blur(10px);
             display: flex;
             flex-direction: column;
-            gap: 2px; /* ลดระยะห่างระหว่าง label กับ value */
+            gap: 2px;
             min-width: 0;
         }
         
         .data-label {
-            font-size: 10px; /* ปรับขนาดฟอนต์ให้เล็กลง */
+            font-size: 10px;
             color: rgba(255, 255, 255, 0.6);
             font-weight: 500;
             white-space: nowrap;
@@ -159,7 +166,7 @@
         }
         
         .data-value {
-            font-size: 18px; /* ปรับขนาดฟอนต์ให้เล็กลง */
+            font-size: 18px;
             font-weight: 700;
             color: #ffffff;
             white-space: nowrap;
@@ -245,13 +252,14 @@
 
         <div class="header">
             <a href="PoseSelect.html" class="header-back"><i class="fas fa-chevron-left"></i></a>
-            <h1 class="header-title" id="exerciseTitle">ชื่อท่า</h1>
+            <h1 class="header-title" id="exerciseTitle">Dumbbell Lateral Raise</h1>
         </div>
 
         <div class="main-content">
             <div class="camera-container">
                 <video id="cameraFeed" autoplay playsinline></video>
-                <div class="camera-placeholder" id="cameraPlaceholder">กล้อง</div>
+                <canvas id="overlayCanvas"></canvas>
+                <div class="camera-placeholder" id="cameraPlaceholder">กำลังเข้าถึงกล้อง...</div>
             </div>
 
             <div class="overlay-data">
@@ -261,7 +269,7 @@
                 </div>
                 <div class="data-item">
                     <div class="data-label">ฟอร์ม</div>
-                    <div class="data-value" id="formStatus">ปกติ</div>
+                    <div class="data-value" id="formStatus">กำลังรอ</div>
                 </div>
                 <div class="data-item">
                     <div class="data-label">สถานะ</div>
@@ -295,82 +303,134 @@
             </div>
         </div>
     </div>
-
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const cameraFeed = document.getElementById('cameraFeed');
+            const exerciseTitle = document.getElementById('exerciseTitle');
+            const repCount = document.getElementById('repCount');
+            const formStatus = document.getElementById('formStatus');
+            const poseState = document.getElementById('poseState');
+            const cameraVideo = document.getElementById('cameraFeed');
             const cameraPlaceholder = document.getElementById('cameraPlaceholder');
+            const overlayCanvas = document.getElementById('overlayCanvas');
+            const ctx = overlayCanvas.getContext('2d');
 
-            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-                const constraints = {
-                    video: {
-                        width: { ideal: 1280 },
-                        height: { ideal: 720 },
-                        facingMode: 'user'
-                    }
-                };
+            const urlParams = new URLSearchParams(window.location.search);
+            const exerciseName = urlParams.get('exercise');
+            exerciseTitle.textContent = exerciseName || 'Dumbbell Lateral Raise';
+            
+            const socket = io.connect('http://' + document.domain + ':' + location.port);
 
-                navigator.mediaDevices.getUserMedia(constraints)
-                    .then(stream => {
-                        cameraFeed.srcObject = stream;
-                        cameraFeed.onloadedmetadata = () => {
-                            cameraFeed.play();
-                            cameraPlaceholder.style.display = 'none';
-                        };
-                    })
-                    .catch(error => {
-                        console.error('Error accessing camera: ', error);
-                        cameraPlaceholder.textContent = 'ไม่สามารถเข้าถึงกล้องได้: ' + error.name;
-                    });
-            } else {
-                cameraPlaceholder.textContent = 'เบราว์เซอร์ไม่รองรับการเข้าถึงกล้อง';
-            }
+            let streaming = false;
 
-            function simulateDataFromPython() {
-                const repCount = document.getElementById('repCount');
-                const formStatus = document.getElementById('formStatus');
-                const poseState = document.getElementById('poseState');
-
-                let currentCount = 0;
-                let currentStage = 'up';
-                let isGoodForm = true;
-                let isLegStraight = true;
-                const exerciseName = "SideLyingLegLift";
-
-                document.getElementById('exerciseTitle').textContent = exerciseName;
-
-                setInterval(() => {
-                    if (currentStage === 'up') {
-                        currentCount++;
-                        currentStage = 'down';
-                    } else {
-                        currentStage = 'up';
-                    }
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(function(stream) {
+                    cameraVideo.srcObject = stream;
+                    cameraVideo.play();
+                    cameraPlaceholder.style.display = 'none';
                     
-                    repCount.textContent = currentCount;
+                    cameraVideo.addEventListener('loadeddata', () => {
+                        // อัปเดตขนาด canvas ให้ตรงกับขนาดวิดีโอ
+                        const videoRatio = cameraVideo.videoWidth / cameraVideo.videoHeight;
+                        const containerWidth = cameraVideo.offsetWidth;
+                        const containerHeight = cameraVideo.offsetHeight;
+                        
+                        let finalWidth = containerWidth;
+                        let finalHeight = containerWidth / videoRatio;
+                        
+                        if (finalHeight > containerHeight) {
+                            finalHeight = containerHeight;
+                            finalWidth = containerHeight * videoRatio;
+                        }
+                        
+                        overlayCanvas.width = finalWidth;
+                        overlayCanvas.height = finalHeight;
+                        
+                        streaming = true;
+                        sendFrameToServer();
+                    }, { once: true });
+                })
+                .catch(function(err) {
+                    console.log("An error occurred: " + err);
+                    cameraPlaceholder.textContent = 'ไม่สามารถเข้าถึงกล้องได้: ' + err.name;
+                });
+                
+            // ฟังก์ชันสำหรับส่งภาพไปยังเซิร์ฟเวอร์
+            function sendFrameToServer() {
+                if (!streaming) return;
 
-                    const rand = Math.random();
-                    if (rand < 0.2) {
-                        formStatus.textContent = 'ผิด';
-                        formStatus.className = 'data-value bad';
-                        poseState.textContent = 'ขาไม่ตรง';
-                        poseState.className = 'data-value bad';
-                    } else if (rand < 0.4) {
-                        formStatus.textContent = 'แย่';
-                        formStatus.className = 'data-value normal';
-                        poseState.textContent = 'ขาไม่ยกสูงพอ';
-                        poseState.className = 'data-value normal';
-                    } else {
-                        formStatus.textContent = 'ดี';
-                        formStatus.className = 'data-value good';
-                        poseState.textContent = 'ขาตรง';
-                        poseState.className = 'data-value good';
+                const tempCanvas = document.createElement('canvas');
+                const tempCtx = tempCanvas.getContext('2d');
+                tempCanvas.width = cameraVideo.videoWidth;
+                tempCanvas.height = cameraVideo.videoHeight;
+                tempCtx.drawImage(cameraVideo, 0, 0, tempCanvas.width, tempCanvas.height);
+                
+                tempCanvas.toBlob(function(blob) {
+                    if (blob) {
+                        const reader = new FileReader();
+                        reader.readAsDataURL(blob); 
+                        reader.onloadend = function() {
+                            const base64data = reader.result;
+                            socket.emit('frame', { image: base64data, exercise_name: exerciseName });
+                        }
                     }
+                }, 'image/jpeg', 0.5);
 
-                }, 2000);
+                requestAnimationFrame(sendFrameToServer);
             }
 
-            simulateDataFromPython();
+            // รับข้อมูลการนับครั้งและฟอร์มจากเซิร์ฟเวอร์
+            socket.on('workout_data', function(data) {
+                repCount.textContent = data.rep_count;
+                formStatus.textContent = data.form_status;
+                poseState.textContent = data.pose_state;
+                
+                if (data.form_status === 'ดี') {
+                    formStatus.className = 'data-value good';
+                } else if (data.form_status === 'ผิด' || data.form_status === 'ยกสูงเกินไป' || data.form_status === 'ต่ำเกินไป') {
+                    formStatus.className = 'data-value bad';
+                } else {
+                    formStatus.className = 'data-value normal';
+                }
+            });
+            
+            // รับจุด keypoints จาก Python และวาดลงบน Canvas
+            socket.on('pose_landmarks', function(data) {
+                const landmarks = data.landmarks;
+                const connections = data.connections;
+                if (!landmarks || landmarks.length === 0) {
+                    ctx.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height);
+                    return;
+                }
+
+                // เริ่มวาด
+                ctx.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height);
+
+                // วาดเส้นเชื่อมต่อ
+                if (connections && connections.length > 0) {
+                    ctx.strokeStyle = '#00ff00'; // Green
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    connections.forEach(pair => {
+                        const start = landmarks[pair[0]];
+                        const end = landmarks[pair[1]];
+                        if (start && end) {
+                            ctx.moveTo(start.x * overlayCanvas.width, start.y * overlayCanvas.height);
+                            ctx.lineTo(end.x * overlayCanvas.width, end.y * overlayCanvas.height);
+                        }
+                    });
+                    ctx.stroke();
+                }
+
+                // วาดจุด keypoints
+                landmarks.forEach(point => {
+                    ctx.beginPath();
+                    ctx.arc(point.x * overlayCanvas.width, point.y * overlayCanvas.height, 5, 0, 2 * Math.PI);
+                    ctx.fillStyle = 'red';
+                    ctx.fill();
+                });
+            });
         });
     </script>
 </body>

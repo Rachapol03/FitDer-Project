@@ -85,10 +85,10 @@ def gen_res_mongodb(query_text):
     if not meaningful_docs:
         logging.info("No meaningful context found. Answering using general knowledge.")
         prompt = (
-            f"You are a fitness trainer and an expert in providing detailed and helpful advice. "
-            f"No matter what language you ask, always answer in Thai."
-            f"The following question is outside the specific knowledge of your database. "
-            f"Please answer the following question using your general knowledge, and try to be as helpful and informative as possible.\n\n"
+            f"You are a fitness trainer and a health expert who provides detailed and helpful advice. "
+            f"No matter what language the user asks in, always answer in Thai. "
+            f"Please answer the following question using your general knowledge. "
+            f"Provide advice that is as helpful and comprehensive as possible.\n\n"
             f"Question: {query_text}"
         )
     else:
