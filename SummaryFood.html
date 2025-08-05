@@ -56,8 +56,6 @@
             display: none !important;
         }
 
-
-
         /* Header */
         .header {
             padding: 20px;
@@ -161,13 +159,18 @@
             margin-bottom: 15px;
         }
 
-        /* Date Navigation */
+        /* Date Navigation - Fixed to remove scrollbar */
         .date-nav {
             display: flex;
             gap: 8px;
             margin-bottom: 20px;
             overflow-x: auto;
-            padding-bottom: 10px;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .date-nav::-webkit-scrollbar {
+            display: none;
         }
 
         .date-item {
