@@ -56,8 +56,6 @@
             display: none !important;
         }
 
-
-
         /* Header */
         .header {
             padding: 20px;
@@ -161,13 +159,18 @@
             margin-bottom: 15px;
         }
 
-        /* Date Navigation */
+        /* Date Navigation - Fixed to remove scrollbar */
         .date-nav {
             display: flex;
             gap: 8px;
             margin-bottom: 20px;
             overflow-x: auto;
-            padding-bottom: 10px;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .date-nav::-webkit-scrollbar {
+            display: none;
         }
 
         .date-item {
@@ -661,23 +664,23 @@
         <!-- Bottom Navigation -->
         <div class="bottom-nav">
             <div class="nav-items">
-                <a href="Main.html" class="nav-item">
+                <a href="Main.html" class="nav-item active">
                     <div class="nav-icon">🏠</div>
                     <div class="nav-label">Home</div>
                 </a>
-                <a href="Chatbot.html" class="nav-item">
+                <a href="Chatbot.html" class="nav-item active">
                     <div class="nav-icon">🤖</div>
                     <div class="nav-label">Chatbot</div>
                 </a>
-                <a href="PoseSelect.html" class="nav-item">
+                <a href="PoseSelect.html" class="nav-item active">
                     <div class="nav-icon">💪</div>
                     <div class="nav-label">Workout</div>
                 </a>
-                <a href="Notification.html" class="nav-item">
+                <a href="Notification.html" class="nav-item active">
                     <div class="nav-icon">🔔</div>
                     <div class="nav-label">Notification</div>
                 </a>
-                <a href="Profile.html" class="nav-item">
+                <a href="Profile.html" class="nav-item active">
                     <div class="nav-icon">👤</div>
                     <div class="nav-label">Profile</div>
                 </a>
