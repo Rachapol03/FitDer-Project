@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Workout Detection</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* CSS จากโค้ดเดิม, ปรับปรุงเพื่อแสดงผลที่เหมาะสม */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #000000;
+            color: #ffffff;
+            overflow: hidden;
+            position: fixed;
+            width: 100%;
+            height: 100%;
+        }
+
+        .mobile-container {
+            width: 100%;
+            height: 100vh;
+            height: -webkit-fill-available;
+            margin: 0;
+            background: #000000;
+            position: relative;
+            box-shadow: none;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .bg-decoration {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            opacity: 0.03;
+            background-image:
+                radial-gradient(circle at 20% 80%, white 1px, transparent 1px),
+                radial-gradient(circle at 80% 20%, white 1px, transparent 1px),
+                radial-gradient(circle at 40% 40%, white 1px, transparent 1px);
+            background-size: 50px 50px, 80px 80px, 60px 60px;
+            pointer-events: none;
+        }
+
+        .header {
+            height: 60px; /* ปรับขนาดความสูงให้แคบลง */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 0 16px;
+        }
+
+        .header-title {
+            font-size: 20px; /* ปรับขนาดฟอนต์ให้เล็กลง */
+            font-weight: 700;
+            color: #ffffff;
+            text-align: center;
+            flex-grow: 1;
+        }
+        
+        .header-back {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #ffffff;
+            font-size: 24px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .main-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 16px;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .camera-container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            background: #111;
+            border-radius: 16px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        #cameraFeed {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transform: scaleX(-1); /* Flip video horizontally */
+        }
+        
+        .camera-placeholder {
+            font-size: 20px;
+            color: rgba(255, 255, 255, 0.5);
+            text-align: center;
+            padding: 20px;
+        }
+
+        .overlay-data {
+            position: absolute;
+            top: 0; /* ขยับขึ้นไปด้านบน */
+            left: 0;
+            right: 0;
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.7), transparent); /* เปลี่ยน gradient ให้เหมาะสม */
+            padding: 10px 16px; /* ลด padding ลง */
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .data-item {
+            flex: 1;
+            padding: 8px 6px; /* ลด padding ลง */
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            gap: 2px; /* ลดระยะห่างระหว่าง label กับ value */
+            min-width: 0;
+        }
+        
+        .data-label {
+            font-size: 10px; /* ปรับขนาดฟอนต์ให้เล็กลง */
+            color: rgba(255, 255, 255, 0.6);
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .data-value {
+            font-size: 18px; /* ปรับขนาดฟอนต์ให้เล็กลง */
+            font-weight: 700;
+            color: #ffffff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .data-value.good {
+            color: #22c55e; /* Green */
+        }
+        .data-value.bad {
+            color: #ef4444; /* Red */
+        }
+        .data-value.normal {
+            color: #f59e0b; /* Yellow/Orange */
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            width: 100%;
+            background: #000000;
+            backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 12px 20px;
+            padding-bottom: calc(12px + env(safe-area-inset-bottom, 0));
+            z-index: 100;
+        }
+        
+        .nav-items {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            gap: 8px;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            color: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            flex: 1;
+        }
+
+        .nav-item.active {
+            color: #ffffff;
+        }
+
+        .nav-item:hover {
+            color: #ffffff;
+            transform: translateY(-2px);
+        }
+
+        .nav-icon {
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0.7;
+        }
+
+        .nav-item.active .nav-icon {
+            opacity: 1;
+        }
+
+        .nav-label {
+            font-size: 10px;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="mobile-container">
+        <div class="bg-decoration"></div>
+
+        <div class="header">
+            <a href="PoseSelect.html" class="header-back"><i class="fas fa-chevron-left"></i></a>
+            <h1 class="header-title" id="exerciseTitle">ชื่อท่า</h1>
+        </div>
+
+        <div class="main-content">
+            <div class="camera-container">
+                <video id="cameraFeed" autoplay playsinline></video>
+                <div class="camera-placeholder" id="cameraPlaceholder">กล้อง</div>
+            </div>
+
+            <div class="overlay-data">
+                <div class="data-item">
+                    <div class="data-label">จำนวนครั้ง</div>
+                    <div class="data-value" id="repCount">0</div>
+                </div>
+                <div class="data-item">
+                    <div class="data-label">ฟอร์ม</div>
+                    <div class="data-value" id="formStatus">ปกติ</div>
+                </div>
+                <div class="data-item">
+                    <div class="data-label">สถานะ</div>
+                    <div class="data-value" id="poseState">กำลังรอ</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bottom-nav">
+            <div class="nav-items">
+                <a href="Main.html" class="nav-item">
+                    <div class="nav-icon">🏠</div>
+                    <div class="nav-label">Home</div>
+                </a>
+                <a href="Chatbot.html" class="nav-item">
+                    <div class="nav-icon">🤖</div>
+                    <div class="nav-label">Chatbot</div>
+                </a>
+                <a href="PoseSelect.html" class="nav-item active">
+                    <div class="nav-icon">💪</div>
+                    <div class="nav-label">Workout</div>
+                </a>
+                <a href="Notification.html" class="nav-item">
+                    <div class="nav-icon">🔔</div>
+                    <div class="nav-label">Notification</div>
+                </a>
+                <a href="Profile.html" class="nav-item">
+                    <div class="nav-icon">👤</div>
+                    <div class="nav-label">Profile</div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const cameraFeed = document.getElementById('cameraFeed');
+            const cameraPlaceholder = document.getElementById('cameraPlaceholder');
+
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                const constraints = {
+                    video: {
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 },
+                        facingMode: 'user'
+                    }
+                };
+
+                navigator.mediaDevices.getUserMedia(constraints)
+                    .then(stream => {
+                        cameraFeed.srcObject = stream;
+                        cameraFeed.onloadedmetadata = () => {
+                            cameraFeed.play();
+                            cameraPlaceholder.style.display = 'none';
+                        };
+                    })
+                    .catch(error => {
+                        console.error('Error accessing camera: ', error);
+                        cameraPlaceholder.textContent = 'ไม่สามารถเข้าถึงกล้องได้: ' + error.name;
+                    });
+            } else {
+                cameraPlaceholder.textContent = 'เบราว์เซอร์ไม่รองรับการเข้าถึงกล้อง';
+            }
+
+            function simulateDataFromPython() {
+                const repCount = document.getElementById('repCount');
+                const formStatus = document.getElementById('formStatus');
+                const poseState = document.getElementById('poseState');
+
+                let currentCount = 0;
+                let currentStage = 'up';
+                let isGoodForm = true;
+                let isLegStraight = true;
+                const exerciseName = "SideLyingLegLift";
+
+                document.getElementById('exerciseTitle').textContent = exerciseName;
+
+                setInterval(() => {
+                    if (currentStage === 'up') {
+                        currentCount++;
+                        currentStage = 'down';
+                    } else {
+                        currentStage = 'up';
+                    }
+                    
+                    repCount.textContent = currentCount;
+
+                    const rand = Math.random();
+                    if (rand < 0.2) {
+                        formStatus.textContent = 'ผิด';
+                        formStatus.className = 'data-value bad';
+                        poseState.textContent = 'ขาไม่ตรง';
+                        poseState.className = 'data-value bad';
+                    } else if (rand < 0.4) {
+                        formStatus.textContent = 'แย่';
+                        formStatus.className = 'data-value normal';
+                        poseState.textContent = 'ขาไม่ยกสูงพอ';
+                        poseState.className = 'data-value normal';
+                    } else {
+                        formStatus.textContent = 'ดี';
+                        formStatus.className = 'data-value good';
+                        poseState.textContent = 'ขาตรง';
+                        poseState.className = 'data-value good';
+                    }
+
+                }, 2000);
+            }
+
+            simulateDataFromPython();
+        });
+    </script>
+</body>
+</html>
