@@ -6,6 +6,7 @@
     <title>FitDER Chat Bot</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        /* CSS เดิมทั้งหมดของคุณที่ส่งมา */
         * {
             margin: 0;
             padding: 0;
@@ -414,7 +415,6 @@
     <div class="app-container">
 
 
-        <!-- Header -->
         <div class="header">
             <div class="header-left">
                 <div class="back-btn">←</div>
@@ -430,7 +430,6 @@
             </div>
         </div>
 
-        <!-- Chat Container -->
         <div class="chat-container" id="chatContainer">
             <div class="message bot">
                 <div class="message-bubble">
@@ -456,7 +455,6 @@
             </div>
         </div>
 
-        <!-- Input Area -->
         <div class="input-container">
             <div class="input-wrapper">
                 <input type="text" class="message-input" placeholder="พิมพ์ข้อความ..." id="messageInput">
@@ -467,7 +465,6 @@
             </div>
         </div>
 
-        <!-- Bottom Navigation -->
         <div class="bottom-nav">
             <a href="Main.html" class="nav-item" style="text-decoration: none; color: inherit;">
                 <div class="nav-icon">🏠</div>
@@ -493,20 +490,10 @@
     </div>
 
     <script>
-        // Chat functionality
         const messageInput = document.getElementById('messageInput');
         const sendBtn = document.getElementById('sendBtn');
         const chatContainer = document.getElementById('chatContainer');
         const typingIndicator = document.getElementById('typingIndicator');
-
-        // Sample bot responses
-        const botResponses = [
-            "ครับ ผมเข้าใจแล้ว มีคำถามอื่นอีกไหมครับ?",
-            "นั่นเป็นความคิดที่ดีมากเลยครับ! ลองทำดูนะครับ 💪",
-            "ผมแนะนำให้เริ่มจากพื้นฐานก่อนนะครับ ค่อยๆ เพิ่มความหนักทีละน้อย",
-            "อย่าลืมดื่มน้ำให้เพียงพอและพักผ่อนให้เต็มที่ด้วยนะครับ 💧",
-            "ดีมากครับ! คุณทำได้แล้ว อย่าลืมสม่ำเสมอด้วยนะ 🎯"
-        ];
 
         function addMessage(text, isUser = false) {
             const messageDiv = document.createElement('div');
@@ -514,11 +501,10 @@
             
             const bubbleDiv = document.createElement('div');
             bubbleDiv.className = 'message-bubble';
-            bubbleDiv.textContent = text;
+            bubbleDiv.innerHTML = text; // ใช้ innerHTML เพื่อรองรับการแสดงผลข้อความที่มีการจัด format (เช่น <br>)
             
             messageDiv.appendChild(bubbleDiv);
             
-            // Insert before typing indicator if it exists
             const typingIndicator = document.getElementById('typingIndicator');
             chatContainer.insertBefore(messageDiv, typingIndicator);
             
@@ -537,23 +523,43 @@
             typingIndicator.style.display = 'none';
         }
 
-        function sendMessage() {
+        async function sendMessage() {
             const text = messageInput.value.trim();
             if (!text) return;
 
-            // Add user message
+            // เพิ่มข้อความของผู้ใช้ใน UI
             addMessage(text, true);
             messageInput.value = '';
 
-            // Show typing indicator
+            // แสดง Typing Indicator
             showTypingIndicator();
 
-            // Simulate bot response
-            setTimeout(() => {
+            // ส่งข้อความไปที่ Python Back-end API
+            try {
+                const response = await fetch('http://localhost:5000/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ message: text })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                
+                // ซ่อน Typing Indicator
                 hideTypingIndicator();
-                const randomResponse = botResponses[Math.floor(Math.random() * botResponses.length)];
-                addMessage(randomResponse);
-            }, 1000 + Math.random() * 2000);
+                
+                // เพิ่มคำตอบของบอทใน UI
+                addMessage(data.response);
+            } catch (error) {
+                console.error('Error:', error);
+                hideTypingIndicator();
+                addMessage('ขออภัยค่ะ เกิดข้อผิดพลาดในการเชื่อมต่อกับเซิร์ฟเวอร์ กรุณาลองใหม่อีกครั้ง');
+            }
         }
 
         // Event listeners
@@ -563,14 +569,23 @@
                 sendMessage();
             }
         });
-
+        
         // Navigation functionality
         document.querySelectorAll('.nav-item').forEach(item => {
             item.addEventListener('click', () => {
-                document.querySelector('.nav-item.active').classList.remove('active');
+                const activeItem = document.querySelector('.nav-item.active');
+                if (activeItem) {
+                    activeItem.classList.remove('active');
+                }
                 item.classList.add('active');
             });
         });
+
+        // Highlight the current page's nav item
+        const currentPage = window.location.pathname.split('/').pop();
+        if (currentPage === 'Chatbot.html' || currentPage === '') {
+            document.querySelector('a[href="Chatbot.html"]').classList.add('active');
+        }
 
         // Auto-focus input
         messageInput.focus();
