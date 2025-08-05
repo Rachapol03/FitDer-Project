@@ -21,7 +21,8 @@
         }
 
         .app-container {
-            max-width: 375px;
+            width: 100%;
+            max-width: 100%;
             margin: 0 auto;
             background: #000000;
             min-height: 100vh;
@@ -78,16 +79,24 @@
         }
 
         .nav-tab {
-            padding: 8px 16px;
+            flex: 1;
+            padding: 8px 8px;
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 12px;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 500;
             color: rgba(255, 255, 255, 0.7);
             cursor: pointer;
             transition: all 0.3s ease;
             text-decoration: none;
+            text-align: center;
+            white-space: nowrap;
+            min-width: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
         }
 
         .nav-tab.active {
@@ -338,9 +347,9 @@
         .bottom-nav {
             position: fixed;
             bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 375px;
+            left: 0;
+            right: 0;
+            width: 100%;
             background: rgba(0, 0, 0, 0.95);
             backdrop-filter: blur(20px);
             border-top: 1px solid rgba(255, 255, 255, 0.05);
