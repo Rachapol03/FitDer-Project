@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Age Survey App</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #000000 0%, #333333 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            overflow: hidden;
+            margin: 0;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 100%;
+            min-height: 100vh;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            border-radius: 0;
+            box-shadow: none;
+            overflow: hidden;
+            position: relative;
+            border: none;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            color: white;
+            padding: 60px 25px 25px;
+            text-align: center;
+            position: relative;
+        }
+
+        .step-indicator {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .skip-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .skip-btn:hover {
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        .question-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-top: 15px;
+            letter-spacing: -0.5px;
+            position: relative;
+        }
+
+        .content {
+            padding: 20px 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+            justify-content: space-between;
+            min-height: calc(100vh - 150px);
+        }
+
+        .age-slider-container {
+            width: 100%;
+            max-width: 100%;
+            margin-bottom: 24px;
+            position: relative;
+            padding: 0 16px;
+        }
+
+        .age-display {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .age-value {
+            font-size: 4rem;
+            font-weight: 800;
+            color: #1a1a1a;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            margin-bottom: 10px;
+        }
+
+        .age-label {
+            font-size: 16px;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .slider-wrapper {
+            position: relative;
+            width: 100%;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .age-slider {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 6px;
+            border-radius: 5px;
+            background: linear-gradient(to right, #e0e0e0 0%, #000000 50%, #e0e0e0 100%);
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .age-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .age-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .age-slider::-moz-range-thumb {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .age-marks {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+            padding: 0 15px;
+        }
+
+        .age-mark {
+            font-size: 12px;
+            color: #999;
+            font-weight: 500;
+        }
+
+        .continue-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            padding: 18px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .continue-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .progress-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #000000, #333333);
+            width: 20%;
+            transition: width 0.5s ease;
+        }
+
+        .age-suggestions {
+            display: flex;
+            gap: 8px;
+            margin-top: 16px;
+            flex-wrap: wrap;
+            justify-content: center;
+            width: 100%;
+            padding: 0 16px;
+        }
+
+        .age-suggestion {
+            background: rgba(255, 255, 255, 0.8);
+            border: 2px solid #e0e0e0;
+            border-radius: 25px;
+            padding: 8px 16px;
+            font-size: 14px;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .age-suggestion:hover {
+            background: #000000;
+            color: white;
+            border-color: #000000;
+            transform: translateY(-1px);
+        }
+
+        @media (max-width: 480px) {
+            .header {
+                padding: 55px 16px 20px;
+            }
+            
+            .question-title {
+                font-size: 24px;
+                margin-top: 10px;
+            }
+            
+            .content {
+                padding: 16px;
+            }
+            
+            .age-value {
+                font-size: 3.5rem;
+            }
+
+            .continue-btn {
+                position: sticky;
+                bottom: 16px;
+                margin-top: auto;
+            }
+
+            .age-suggestions {
+                margin-bottom: 24px;
+            }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(0, 0, 0, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
+            }
+        }
+
+        @keyframes bounceIn {
+            0% {
+                transform: scale(0.3);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            70% {
+                transform: scale(0.9);
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .bounce-in {
+            animation: bounceIn 0.6s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="header">
+            <button class="skip-btn" onclick="skipQuestion()">Skip</button>
+            <div class="step-indicator">Step 1 of 5</div>
+            <h1 class="question-title">How old are you?</h1>
+            <div class="progress-bar"></div>
+        </div>
+        
+        <div class="content">
+            <div class="age-display">
+                <div class="age-value bounce-in" id="ageValue">25</div>
+                <div class="age-label">years old</div>
+            </div>
+            
+            <div class="age-slider-container">
+                <div class="slider-wrapper">
+                    <input type="range" min="13" max="65" value="25" class="age-slider" id="ageSlider">
+                </div>
+                <div class="age-marks">
+                    <span class="age-mark">13</span>
+                    <span class="age-mark">25</span>
+                    <span class="age-mark">35</span>
+                    <span class="age-mark">45</span>
+                    <span class="age-mark">65</span>
+                </div>
+            </div>
+
+            <div class="age-suggestions">
+                <div class="age-suggestion" onclick="setAge(18)">18</div>
+                <div class="age-suggestion" onclick="setAge(21)">21</div>
+                <div class="age-suggestion" onclick="setAge(25)">25</div>
+                <div class="age-suggestion" onclick="setAge(30)">30</div>
+            </div>
+            
+            <button class="continue-btn" onclick="continueToNext()">
+                Continue
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const ageSlider = document.getElementById('ageSlider');
+        const ageValue = document.getElementById('ageValue');
+        let selectedAge = 25;
+
+        // Update age display when slider moves
+        ageSlider.addEventListener('input', function() {
+            selectedAge = parseInt(this.value);
+            updateAgeDisplay();
+        });
+
+        // Add touch events for better mobile experience
+        ageSlider.addEventListener('touchstart', function() {
+            this.style.transform = 'scale(1.02)';
+        });
+
+        ageSlider.addEventListener('touchend', function() {
+            this.style.transform = 'scale(1)';
+        });
+
+        function updateAgeDisplay() {
+            ageValue.textContent = selectedAge;
+            ageValue.classList.remove('bounce-in');
+            
+            // Add bounce animation
+            setTimeout(() => {
+                ageValue.classList.add('bounce-in');
+            }, 10);
+
+            // Update slider background gradient based on position
+            const percentage = ((selectedAge - 13) / (65 - 13)) * 100;
+            ageSlider.style.background = `linear-gradient(to right, #1a1a1a 0%, #1a1a1a ${percentage}%, #e0e0e0 ${percentage}%, #e0e0e0 100%)`;
+        }
+
+        function setAge(age) {
+            selectedAge = age;
+            ageSlider.value = age;
+            updateAgeDisplay();
+            
+            // Add pulse effect to continue button
+            const continueBtn = document.querySelector('.continue-btn');
+            continueBtn.classList.add('pulse');
+            setTimeout(() => {
+                continueBtn.classList.remove('pulse');
+            }, 2000);
+        }
+
+        function continueToNext() {
+            // Animate transition
+            document.querySelector('.app-container').style.transform = 'translateX(-100%)';
+            document.querySelector('.app-container').style.transition = 'transform 0.5s ease';
+            
+            setTimeout(() => {
+                // Navigate to the next page
+                window.location.href = 'Select2.html';
+            }, 500);
+        }
+
+        function skipQuestion() {
+            if (confirm('Do you want to skip this question?')) {
+                continueToNext();
+            }
+        }
+
+        // Initialize
+        window.addEventListener('load', () => {
+            updateAgeDisplay();
+            
+            // Add entrance animation
+            document.querySelector('.app-container').style.transform = 'translateY(50px)';
+            document.querySelector('.app-container').style.opacity = '0';
+            document.querySelector('.app-container').style.transition = 'all 0.8s ease';
+            
+            setTimeout(() => {
+                document.querySelector('.app-container').style.transform = 'translateY(0)';
+                document.querySelector('.app-container').style.opacity = '1';
+            }, 100);
+        });
+
+        // Add haptic feedback for mobile (if supported)
+        ageSlider.addEventListener('input', function() {
+            if (navigator.vibrate) {
+                navigator.vibrate(10);
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,425 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Height & Weight - Step 5 of 5</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 375px;
+            margin: 0 auto;
+            min-height: 100vh;
+            position: relative;
+            background: #000000;
+        }
+
+        .header {
+            padding: 30px 24px 20px;
+            text-align: left;
+        }
+
+        .step-indicator {
+            font-size: 12px;
+            color: #888888;
+            font-weight: 500;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        .title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #ffffff;
+            line-height: 1.2;
+        }
+
+        .form-section {
+            padding: 0 24px;
+            margin-bottom: 40px;
+        }
+
+        .input-group {
+            margin-bottom: 24px;
+        }
+
+        .input-label {
+            font-size: 16px;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 16px;
+            display: block;
+        }
+
+        .measurement-container {
+            background: #1a1a1a;
+            border-radius: 12px;
+            padding: 16px 12px;
+            border: 1px solid #333333;
+            transition: all 0.3s ease;
+        }
+
+        .measurement-container:hover {
+            border-color: #555555;
+            background: #222222;
+        }
+
+        .value-display {
+            text-align: center;
+            margin-bottom: 12px;
+            min-height: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .value-number {
+            font-size: 28px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 4px;
+            line-height: 1.1;
+        }
+
+        .value-unit {
+            font-size: 14px;
+            color: #888888;
+            font-weight: 500;
+        }
+
+        .unit-toggle {
+            display: flex;
+            background: #333333;
+            border-radius: 8px;
+            padding: 3px;
+            margin-bottom: 16px;
+        }
+
+        .unit-option {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: #888888;
+            font-size: 12px;
+            font-weight: 500;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .unit-option.active {
+            background: #ffffff;
+            color: #000000;
+        }
+
+        .slider-container {
+            position: relative;
+            margin: 12px 0;
+        }
+
+        .slider {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #333333;
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #ffffff;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(255, 255, 255, 0.3);
+        }
+
+        .slider::-moz-range-thumb {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #ffffff;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 8px rgba(255, 255, 255, 0.3);
+        }
+
+        .actions {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 375px;
+            padding: 24px;
+            background: linear-gradient(to top, #000000 80%, transparent);
+        }
+
+        .skip-btn {
+            position: absolute;
+            top: 16px;
+            right: 24px;
+            background: none;
+            border: none;
+            color: #888888;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .skip-btn:hover {
+            color: #ffffff;
+        }
+
+        .continue-btn {
+            width: 100%;
+            background: #ffffff;
+            color: #000000;
+            border: none;
+            border-radius: 16px;
+            padding: 18px 24px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .continue-btn:hover {
+            background: #f0f0f0;
+            transform: translateY(-2px);
+        }
+
+        .continue-btn:active {
+            transform: translateY(0);
+        }
+
+        .progress-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: #ffffff;
+            width: 71.4%; /* 5 of 7 steps */
+            border-radius: 0 2px 2px 0;
+        }
+
+        @media (max-height: 700px) {
+            .header {
+                padding: 20px 24px 16px;
+            }
+            
+            .measurement-container {
+                padding: 12px 10px;
+            }
+            
+            .value-number {
+                font-size: 24px;
+            }
+            
+            .input-group {
+                margin-bottom: 20px;
+            }
+            
+            .unit-option {
+                padding: 6px 8px;
+                font-size: 11px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="progress-bar"></div>
+        
+        <div class="header">
+            <div class="step-indicator">Step 5 of 5</div>
+            <h1 class="title">What's your Height & Weight?</h1>
+        </div>
+
+        <button class="skip-btn">Skip</button>
+
+        <div class="form-section">
+            <div class="input-group">
+                <label class="input-label">Height</label>
+                <div class="measurement-container">
+                    <div class="value-display">
+                        <div class="value-number" id="heightValue">185</div>
+                        <div class="value-unit" id="heightUnit">cm</div>
+                    </div>
+                    
+                    <div class="unit-toggle">
+                        <button class="unit-option" data-unit="ft" onclick="toggleHeightUnit('ft')">FEET</button>
+                        <button class="unit-option active" data-unit="cm" onclick="toggleHeightUnit('cm')">CM</button>
+                    </div>
+                    
+                    <div class="slider-container">
+                        <input type="range" class="slider" id="heightSlider" min="120" max="220" value="185" 
+                               oninput="updateHeight(this.value)">
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label class="input-label">Weight</label>
+                <div class="measurement-container">
+                    <div class="value-display">
+                        <div class="value-number" id="weightValue">65</div>
+                        <div class="value-unit" id="weightUnit">kg</div>
+                    </div>
+                    
+                    <div class="unit-toggle">
+                        <button class="unit-option" data-unit="lbs" onclick="toggleWeightUnit('lbs')">LBS</button>
+                        <button class="unit-option active" data-unit="kg" onclick="toggleWeightUnit('kg')">KG</button>
+                    </div>
+                    
+                    <div class="slider-container">
+                        <input type="range" class="slider" id="weightSlider" min="30" max="150" value="65" 
+                               oninput="updateWeight(this.value)">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="actions">
+            <button class="continue-btn" onclick="continueToNext()">Continue</button>
+        </div>
+    </div>
+
+    <script>
+        let heightUnit = 'cm';
+        let weightUnit = 'kg';
+        let heightValue = 185;
+        let weightValue = 65;
+
+        function toggleHeightUnit(unit) {
+            const buttons = document.querySelectorAll('.unit-toggle .unit-option');
+            const heightButtons = document.querySelectorAll('.input-group:first-child .unit-option');
+            
+            heightButtons.forEach(btn => btn.classList.remove('active'));
+            document.querySelector(`[data-unit="${unit}"]`).classList.add('active');
+            
+            const slider = document.getElementById('heightSlider');
+            const valueDisplay = document.getElementById('heightValue');
+            const unitDisplay = document.getElementById('heightUnit');
+            
+            if (unit === 'ft' && heightUnit === 'cm') {
+                // Convert cm to feet
+                heightValue = Math.round((heightValue / 30.48) * 10) / 10;
+                slider.min = 4;
+                slider.max = 8;
+                slider.step = 0.1;
+                slider.value = heightValue;
+                unitDisplay.textContent = 'ft';
+            } else if (unit === 'cm' && heightUnit === 'ft') {
+                // Convert feet to cm
+                heightValue = Math.round(heightValue * 30.48);
+                slider.min = 120;
+                slider.max = 220;
+                slider.step = 1;
+                slider.value = heightValue;
+                unitDisplay.textContent = 'cm';
+            }
+            
+            heightUnit = unit;
+            valueDisplay.textContent = heightValue;
+        }
+
+        function toggleWeightUnit(unit) {
+            const weightButtons = document.querySelectorAll('.input-group:last-child .unit-option');
+            
+            weightButtons.forEach(btn => btn.classList.remove('active'));
+            weightButtons.forEach(btn => {
+                if (btn.dataset.unit === unit) {
+                    btn.classList.add('active');
+                }
+            });
+            
+            const slider = document.getElementById('weightSlider');
+            const valueDisplay = document.getElementById('weightValue');
+            const unitDisplay = document.getElementById('weightUnit');
+            
+            if (unit === 'lbs' && weightUnit === 'kg') {
+                // Convert kg to lbs
+                weightValue = Math.round(weightValue * 2.20462);
+                slider.min = 66;
+                slider.max = 330;
+                slider.value = weightValue;
+                unitDisplay.textContent = 'lbs';
+            } else if (unit === 'kg' && weightUnit === 'lbs') {
+                // Convert lbs to kg
+                weightValue = Math.round(weightValue / 2.20462);
+                slider.min = 30;
+                slider.max = 150;
+                slider.value = weightValue;
+                unitDisplay.textContent = 'kg';
+            }
+            
+            weightUnit = unit;
+            valueDisplay.textContent = weightValue;
+        }
+
+        function updateHeight(value) {
+            heightValue = heightUnit === 'ft' ? parseFloat(value) : parseInt(value);
+            document.getElementById('heightValue').textContent = heightValue;
+        }
+
+        function updateWeight(value) {
+            weightValue = parseInt(value);
+            document.getElementById('weightValue').textContent = weightValue;
+        }
+
+        function continueToNext() {
+            console.log('Height:', heightValue, heightUnit);
+            console.log('Weight:', weightValue, weightUnit);
+            
+            // Add smooth transition effect
+            document.body.style.transform = 'translateX(-100%)';
+            document.body.style.transition = 'transform 0.3s ease-in-out';
+            
+            setTimeout(() => {
+                // Navigate to Main.html
+                window.location.href = 'Main.html';
+            }, 300);
+        }
+
+        // Add touch feedback for mobile
+        document.querySelectorAll('button').forEach(button => {
+            button.addEventListener('touchstart', function() {
+                this.style.transform = 'scale(0.95)';
+            });
+            
+            button.addEventListener('touchend', function() {
+                this.style.transform = 'scale(1)';
+            });
+        });
+
+        // Smooth scroll prevention for mobile
+        document.addEventListener('touchmove', function(e) {
+            if (e.target.type !== 'range') {
+                e.preventDefault();
+            }
+        }, { passive: false });
+    </script>
+</body>
+</html>

@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fitness App</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #000;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        .app-container {
+            max-width: 375px;
+            margin: 0 auto;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #000 0%, #1a1a1a 100%);
+            position: relative;
+        }
+
+
+
+
+
+        /* Navigation Tabs */
+        .nav-tabs {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 16px;
+            gap: 8px;
+        }
+
+        .nav-tab {
+            flex: 1;
+            text-align: center;
+            padding: 12px 8px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #888;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            line-height: 1;
+            text-decoration: none;
+        }
+
+        .nav-tab.active {
+            background: #fff;
+            color: #000;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .nav-tab:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 0 16px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin: 8px 0 16px 0;
+            color: #fff;
+        }
+
+        /* Category Filters */
+        .category-filters {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 24px;
+            padding: 0;
+            width: 100%;
+            gap: 8px;
+        }
+
+        .filter-btn {
+            flex: 1;
+            padding: 12px 8px;
+            border-radius: 24px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            font-size: 14px;
+            font-weight: 500;
+            text-align: center;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .filter-btn.active {
+            background: #fff;
+            color: #000;
+        }
+
+        .filter-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.05);
+        }
+
+        /* Exercise Cards */
+        .exercise-grid {
+            display: grid;
+            gap: 16px;
+            margin-bottom: 100px;
+        }
+
+        .exercise-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 16px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .exercise-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #ff6b6b, #4ecdc4, #45b7d1);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .exercise-card:hover {
+            transform: translateY(-5px);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.08) 100%);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .exercise-card:hover::before {
+            opacity: 1;
+        }
+
+        .exercise-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .exercise-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 4px;
+        }
+
+        .exercise-difficulty {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .difficulty-beginner {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4caf50;
+            border: 1px solid rgba(76, 175, 80, 0.3);
+        }
+
+        .difficulty-intermediate {
+            background: rgba(255, 193, 7, 0.2);
+            color: #ffc107;
+            border: 1px solid rgba(255, 193, 7, 0.3);
+        }
+
+        .difficulty-advanced {
+            background: rgba(244, 67, 54, 0.2);
+            color: #f44336;
+            border: 1px solid rgba(244, 67, 54, 0.3);
+        }
+
+        .exercise-stats {
+            display: flex;
+            gap: 16px;
+            margin-top: 12px;
+        }
+
+        .stat {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            color: #888;
+        }
+
+        .stat-icon {
+            width: 16px;
+            height: 16px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+        }
+
+        /* Featured Exercise */
+        .featured-exercise {
+            background: linear-gradient(135deg, #1a1a1a 0%, #000 100%);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 24px;
+            margin-bottom: 24px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .featured-exercise::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.05) 0%, transparent 70%);
+        }
+
+        .featured-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 8px;
+        }
+
+        .featured-subtitle {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+
+        .featured-button {
+            background: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: #000;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .featured-button:hover {
+            background: rgba(255, 255, 255, 0.9);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 255, 255, 0.2);
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 8px 4px;
+            z-index: 100;
+        }
+
+        .nav-items {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 0 10px;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            width: 18%;
+            padding: 4px 0;
+        }
+
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .nav-item.active {
+            color: #fff;
+        }
+
+        .nav-item.active .nav-icon {
+            transform: scale(1.2);
+            filter: brightness(1.5);
+        }
+
+        .nav-icon {
+            font-size: 20px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 24px;
+        }
+
+        .nav-label {
+            font-size: 10px;
+            color: #888;
+            font-weight: 500;
+            text-align: center;
+            line-height: 1;
+            width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .nav-item.active .nav-label {
+            color: #fff;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .exercise-card {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .exercise-card:nth-child(2) {
+            animation-delay: 0.1s;
+        }
+
+        .exercise-card:nth-child(3) {
+            animation-delay: 0.2s;
+        }
+
+        .exercise-card:nth-child(4) {
+            animation-delay: 0.3s;
+        }
+
+        /* Responsive */
+        @media (max-width: 375px) {
+            .app-container {
+                max-width: 100%;
+            }
+            
+            .bottom-nav {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+
+
+        <!-- Navigation Tabs -->
+        <div class="nav-tabs">
+            <a href="Main.html" class="nav-tab">📊<br>Main</a>
+            <a href="SummaryWorkout.html" class="nav-tab">📈 Summary</a>
+            <div class="nav-tab active">📖 Guide</div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Category Filters -->
+            <div class="category-filters">
+                <div class="filter-btn active">Work out</div>
+                <a href="GuideNutrition.html" class="filter-btn">Nutrition</a>
+                <a href="GuideCommunity.html" class="filter-btn ">Community</a>
+            </div>
+
+            <h2 class="section-title">Recommended</h2>
+
+            <!-- Featured Exercise -->
+            <div class="featured-exercise">
+                <div class="featured-title">Daily Challenge</div>
+                <div class="featured-subtitle">Complete today's workout to maintain your streak</div>
+                <button class="featured-button">Start Now</button>
+            </div>
+
+            <!-- Exercise Grid -->
+            <div class="exercise-grid">
+                <div class="exercise-card">
+                    <div class="exercise-header">
+                        <div>
+                            <div class="exercise-title">Morning Yoga Flow</div>
+                            <div class="exercise-difficulty difficulty-beginner">Beginner</div>
+                        </div>
+                    </div>
+                    <div class="exercise-stats">
+                        <div class="stat">
+                            <div class="stat-icon"></div>
+                            <span>15 min</span>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-icon"></div>
+                            <span>120 cal</span>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-icon"></div>
+                            <span>4.8★</span>
+                        </div>
+                    </div>
+                    <div style="text-align: right; margin-top: 12px;">
+                        <button class="see-stat-btn" style="background: #fff; color: #000; border: none; padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.3s ease;">See Guide</button>
+                    </div>
+                </div>
+
+                <div class="exercise-card">
+                    <div class="exercise-header">
+                        <div>
+                            <div class="exercise-title">HIIT Cardio Blast</div>
+                            <div class="exercise-difficulty difficulty-intermediate">Intermediate</div>
+                        </div>
+                    </div>
+                    <div class="exercise-stats">
+                        <div class="stat">
+                            <div class="stat-icon"></div>
+                            <span>25 min</span>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-icon"></div>
+                            <span>300 cal</span>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-icon"></div>
+                            <span>4.9★</span>
+                        </div>
+                    </div>
+                    <div style="text-align: right; margin-top: 12px;">
+                        <button class="see-stat-btn" style="background: #fff; color: #000; border: none; padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.3s ease;">See Guide</button>
+                    </div>
+                </div>
+
+                <div class="exercise-card">
+                    <div class="exercise-header">
+                        <div>
+                            <div class="exercise-title">Strength Training</div>
+                            <div class="exercise-difficulty difficulty-advanced">Advanced</div>
+                        </div>
+                    </div>
+                    <div class="exercise-stats">
+                        <div class="stat">
+                            <div class="stat-icon"></div>
+                            <span>45 min</span>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-icon"></div>
+                            <span>400 cal</span>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-icon"></div>
+                            <span>4.7★</span>
+                        </div>
+                    </div>
+                    <div style="text-align: right; margin-top: 12px;">
+                        <button class="see-stat-btn" style="background: #fff; color: #000; border: none; padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.3s ease;">See Guide</button>
+                    </div>
+                </div>
+
+                <div class="exercise-card">
+                    <div class="exercise-header">
+                        <div>
+                            <div class="exercise-title">Evening Stretch</div>
+                            <div class="exercise-difficulty difficulty-beginner">Beginner</div>
+                        </div>
+                    </div>
+                    <div class="exercise-stats">
+                        <div class="stat">
+                            <div class="stat-icon"></div>
+                            <span>10 min</span>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-icon"></div>
+                            <span>50 cal</span>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-icon"></div>
+                            <span>4.6★</span>
+                        </div>
+                    </div>
+                    <div style="text-align: right; margin-top: 12px;">
+                        <button class="see-stat-btn" style="background: #fff; color: #000; border: none; padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.3s ease;">See Guide</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Navigation -->
+        <div class="bottom-nav">
+            <div class="nav-items">
+                <a href="Main.html" class="nav-item">
+                    <div class="nav-icon">🏠</div>
+                    <div class="nav-label">Home</div>
+                </a>
+                <a href="Chatbot.html" class="nav-item">
+                    <div class="nav-icon">🤖</div>
+                    <div class="nav-label">Chatbot</div>
+                </a>
+                <a href="PoseSelect.html" class="nav-item">
+                    <div class="nav-icon">💪</div>
+                    <div class="nav-label">Workout</div>
+                </a>
+                <a href="Notification.html" class="nav-item">
+                    <div class="nav-icon">🔔</div>
+                    <div class="nav-label">Notification</div>
+                </a>
+                <a href="Profile.html" class="nav-item">
+                    <div class="nav-icon">👤</div>
+                    <div class="nav-label">Profile</div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Add interactive functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Navigation tabs
+            const navTabs = document.querySelectorAll('.nav-tab');
+            navTabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    navTabs.forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+
+            // Category filters
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    filterBtns.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+
+            // Bottom navigation
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    navItems.forEach(i => i.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+
+            // Exercise cards click
+            const exerciseCards = document.querySelectorAll('.exercise-card');
+            exerciseCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    // Add ripple effect
+                    const ripple = document.createElement('div');
+                    ripple.style.cssText = `
+                        position: absolute;
+                        border-radius: 50%;
+                        background: rgba(255, 255, 255, 0.3);
+                        transform: scale(0);
+                        animation: ripple 0.6s linear;
+                        pointer-events: none;
+                    `;
+                    
+                    const rect = this.getBoundingClientRect();
+                    const size = Math.max(rect.width, rect.height);
+                    ripple.style.width = ripple.style.height = size + 'px';
+                    ripple.style.left = event.clientX - rect.left - size / 2 + 'px';
+                    ripple.style.top = event.clientY - rect.top - size / 2 + 'px';
+                    
+                    this.appendChild(ripple);
+                    
+                    setTimeout(() => {
+                        ripple.remove();
+                    }, 600);
+                });
+            });
+        });
+
+        // Add CSS for ripple animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes ripple {
+                to {
+                    transform: scale(4);
+                    opacity: 0;
+                }
+            }
+            
+            @keyframes pulse {
+                0%, 100% { transform: scale(1); }
+                50% { transform: scale(1.1); }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

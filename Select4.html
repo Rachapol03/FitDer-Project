@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fitness Goals - Modern App</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
+            color: #ffffff;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 100%;
+            margin: 0 auto;
+            min-height: 100vh;
+            position: relative;
+            background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
+            box-shadow: 0 0 50px rgba(255, 255, 255, 0.1);
+        }
+
+        /* Header */
+        .header {
+            padding: 50px 24px 0;
+            position: relative;
+        }
+
+        .step-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 32px;
+        }
+
+        .step-text {
+            font-size: 14px;
+            font-weight: 500;
+            color: #888;
+            letter-spacing: 0.5px;
+        }
+
+        .skip-btn {
+            font-size: 14px;
+            font-weight: 600;
+            color: #fff;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px 16px;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .skip-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .skip-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .skip-btn:hover::before {
+            left: 100%;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 3px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 40px;
+        }
+
+        .progress-fill {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, #ffffff, #f0f0f0);
+            border-radius: 10px;
+            animation: progressGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes progressGlow {
+            0% { box-shadow: 0 0 5px rgba(255, 255, 255, 0.5); }
+            100% { box-shadow: 0 0 20px rgba(255, 255, 255, 0.8); }
+        }
+
+        .title {
+            font-size: 32px;
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 48px;
+            background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Goal Options */
+        .goals-container {
+            padding: 0 24px;
+            margin-bottom: 40px;
+        }
+
+        .goal-option {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .goal-option::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .goal-option:hover::before {
+            opacity: 1;
+        }
+
+        .goal-option:hover {
+            border-color: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .goal-option.selected {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: #ffffff;
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.2);
+            transform: scale(1.02);
+        }
+
+        .goal-option.selected::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, transparent 100%);
+            pointer-events: none;
+        }
+
+        .goal-content {
+            display: flex;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .goal-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .goal-option:hover .goal-icon {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .goal-option.selected .goal-icon {
+            background: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+        }
+
+        .goal-text {
+            font-size: 18px;
+            font-weight: 600;
+            color: #ffffff;
+            flex: 1;
+        }
+
+        .goal-option.selected .goal-text {
+            color: #ffffff;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+
+        .radio-indicator {
+            width: 24px;
+            height: 24px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .goal-option.selected .radio-indicator {
+            border-color: #ffffff;
+            background: #ffffff;
+        }
+
+        .goal-option.selected .radio-indicator::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 8px;
+            height: 8px;
+            background: #000000;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        /* Continue Button */
+        .continue-section {
+            padding: 0 24px 24px;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, transparent 100%);
+            padding-top: 20px;
+            z-index: 10;
+        }
+
+        .continue-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%);
+            color: #000000;
+            border: none;
+            border-radius: 16px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .continue-btn.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .continue-btn.active:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(255, 255, 255, 0.3);
+        }
+
+        .continue-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .continue-btn.active:hover::before {
+            left: 100%;
+        }
+
+        /* Animations */
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .goal-option {
+            animation: slideInUp 0.6s ease forwards;
+        }
+
+        .goal-option:nth-child(1) { animation-delay: 0.1s; }
+        .goal-option:nth-child(2) { animation-delay: 0.2s; }
+        .goal-option:nth-child(3) { animation-delay: 0.3s; }
+
+        /* Icons */
+        .fitness-icon::before {
+            content: '💪';
+            font-size: 24px;
+        }
+
+        .weight-icon::before {
+            content: '⚖️';
+            font-size: 24px;
+        }
+
+        .muscle-icon::before {
+            content: '🏋️';
+            font-size: 24px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 375px) {
+            .header {
+                padding: 30px 20px 0;
+            }
+            
+            .title {
+                font-size: 24px;
+                margin-bottom: 24px;
+            }
+            
+            .goals-container {
+                padding: 0 20px;
+            }
+            
+            .goal-option {
+                padding: 16px;
+                margin-bottom: 12px;
+            }
+            
+            .goal-icon {
+                width: 40px;
+                height: 40px;
+            }
+            
+            .goal-text {
+                font-size: 16px;
+            }
+            
+            .continue-section {
+                padding: 0 20px 20px;
+            }
+            
+            .continue-btn {
+                padding: 16px;
+                font-size: 15px;
+            }
+        }
+
+        @media (max-height: 700px) {
+            .header {
+                padding-top: 20px;
+            }
+            
+            .title {
+                font-size: 24px;
+                margin-bottom: 24px;
+            }
+            
+            .continue-section {
+                position: relative;
+                background: none;
+                padding-top: 0;
+            }
+            
+            .goals-container {
+                margin-bottom: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="step-indicator">
+                <span class="step-text">Step 4 of 5</span>
+                <button class="skip-btn">Skip</button>
+            </div>
+            
+            <div class="progress-bar">
+                <div class="progress-fill"></div>
+            </div>
+            
+            <h1 class="title">What's your goal?</h1>
+        </div>
+
+        <div class="goals-container">
+            <div class="goal-option selected" data-goal="fitness">
+                <div class="goal-content">
+                    <div class="goal-icon fitness-icon"></div>
+                    <span class="goal-text">Improve fitness</span>
+                    <div class="radio-indicator"></div>
+                </div>
+            </div>
+
+            <div class="goal-option" data-goal="weight">
+                <div class="goal-content">
+                    <div class="goal-icon weight-icon"></div>
+                    <span class="goal-text">Weight loss</span>
+                    <div class="radio-indicator"></div>
+                </div>
+            </div>
+
+            <div class="goal-option" data-goal="muscle">
+                <div class="goal-content">
+                    <div class="goal-icon muscle-icon"></div>
+                    <span class="goal-text">Gain muscle</span>
+                    <div class="radio-indicator"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="continue-section">
+            <button class="continue-btn active">Continue</button>
+        </div>
+    </div>
+
+    <script>
+        // Goal selection functionality
+        const goalOptions = document.querySelectorAll('.goal-option');
+        const continueBtn = document.querySelector('.continue-btn');
+        let selectedGoal = 'fitness'; // Default selection
+
+        goalOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                // Remove selected class from all options
+                goalOptions.forEach(opt => opt.classList.remove('selected'));
+                
+                // Add selected class to clicked option
+                option.classList.add('selected');
+                
+                // Update selected goal
+                selectedGoal = option.dataset.goal;
+                
+                // Enable continue button
+                continueBtn.classList.add('active');
+                
+                // Add subtle animation
+                option.style.transform = 'scale(1.02)';
+                setTimeout(() => {
+                    option.style.transform = '';
+                }, 200);
+            });
+        });
+
+        // Continue button functionality
+        continueBtn.addEventListener('click', () => {
+            if (continueBtn.classList.contains('active')) {
+                // Add loading animation
+                continueBtn.innerHTML = '<div style="display: inline-block; animation: spin 1s linear infinite;">⚡</div> Processing...';
+                
+                setTimeout(() => {
+                    // Navigate to Select5.html
+                    window.location.href = 'Select5.html';
+                }, 1000);
+            }
+        });
+
+        // Skip button functionality
+        const skipBtn = document.querySelector('.skip-btn');
+        skipBtn.addEventListener('click', () => {
+            if (confirm('Are you sure you want to skip this step?')) {
+                alert('Skipped goal selection');
+            }
+        });
+
+        // Add spin animation for loading
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Add touch feedback for mobile
+        goalOptions.forEach(option => {
+            option.addEventListener('touchstart', () => {
+                option.style.transform = 'scale(0.98)';
+            });
+            
+            option.addEventListener('touchend', () => {
+                setTimeout(() => {
+                    option.style.transform = '';
+                }, 150);
+            });
+        });
+
+        // Smooth scroll behavior
+        document.documentElement.style.scrollBehavior = 'smooth';
+    </script>
+</body>
+</html>

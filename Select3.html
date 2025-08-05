@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fitness Level</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            color: white;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 390px;
+            margin: 0 auto;
+            min-height: 100vh;
+            background: linear-gradient(180deg, #000000 0%, #1a1a1a 50%, #000000 100%);
+            position: relative;
+            box-shadow: 0 0 30px rgba(0,0,0,0.8);
+        }
+        
+        .header {
+            padding: 60px 24px 0;
+            position: relative;
+        }
+        
+        .skip-btn {
+            position: absolute;
+            top: 60px;
+            right: 24px;
+            background: none;
+            border: none;
+            color: #888;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .skip-btn:hover {
+            color: white;
+            transform: translateY(-1px);
+        }
+        
+        .progress {
+            color: #666;
+            font-size: 12px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+        
+        .title {
+            font-size: 32px;
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 60px;
+            background: linear-gradient(135deg, #ffffff 0%, #cccccc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .options {
+            padding: 0 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        
+        .option {
+            background: linear-gradient(135deg, #2a2a2a 0%, #1f1f1f 100%);
+            border: 1px solid #333;
+            border-radius: 16px;
+            padding: 20px 24px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .option::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            transition: left 0.6s ease;
+        }
+        
+        .option:hover::before {
+            left: 100%;
+        }
+        
+        .option:hover {
+            transform: translateY(-4px);
+            border-color: #555;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+        }
+        
+        .option.selected {
+            background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%);
+            color: #000;
+            border-color: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 32px rgba(255,255,255,0.2);
+        }
+        
+        .option-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .option-text {
+            font-size: 18px;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+        }
+        
+        .option-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 2px solid currentColor;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .option.selected .option-icon {
+            background: #000;
+            border-color: #000;
+        }
+        
+        .option.selected .option-icon::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .description {
+            font-size: 14px;
+            color: #888;
+            margin-top: 8px;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+        }
+        
+        .option.selected .description {
+            opacity: 1;
+            transform: translateY(0);
+            color: #666;
+        }
+        
+        .continue-btn {
+            position: absolute;
+            bottom: 40px;
+            left: 24px;
+            right: 24px;
+            background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%);
+            color: #000;
+            border: none;
+            border-radius: 50px;
+            padding: 18px 32px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            opacity: 1;
+            transform: translateY(0);
+            box-shadow: 0 8px 32px rgba(255,255,255,0.1);
+        }
+        
+        .continue-btn.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background: linear-gradient(135deg, #666 0%, #555 100%);
+            color: #999;
+        }
+        
+        .continue-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(255,255,255,0.2);
+        }
+        
+        .continue-btn:active {
+            transform: translateY(0);
+        }
+        
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .option {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+        
+        .option:nth-child(1) { animation-delay: 0.1s; }
+        .option:nth-child(2) { animation-delay: 0.2s; }
+        .option:nth-child(3) { animation-delay: 0.3s; }
+        
+        /* Responsive */
+        @media (max-height: 700px) {
+            .header {
+                padding-top: 40px;
+            }
+            .title {
+                margin-bottom: 40px;
+                font-size: 28px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <button class="skip-btn">Skip</button>
+            <div class="progress">Step 3 of 5</div>
+            <h1 class="title">What's your<br>fitness level?</h1>
+        </div>
+        
+        <div class="options">
+            <div class="option" data-level="beginner">
+                <div class="option-content">
+                    <div>
+                        <div class="option-text">Beginner</div>
+                        <div class="description">Just starting your fitness journey</div>
+                    </div>
+                    <div class="option-icon"></div>
+                </div>
+            </div>
+            
+            <div class="option" data-level="intermediate">
+                <div class="option-content">
+                    <div>
+                        <div class="option-text">Intermediate</div>
+                        <div class="description">Regular exercise, some experience</div>
+                    </div>
+                    <div class="option-icon"></div>
+                </div>
+            </div>
+            
+            <div class="option" data-level="advanced">
+                <div class="option-content">
+                    <div>
+                        <div class="option-text">Advanced</div>
+                        <div class="description">Experienced athlete or trainer</div>
+                    </div>
+                    <div class="option-icon"></div>
+                </div>
+            </div>
+        </div>
+        
+        <button class="continue-btn disabled">Continue</button>
+    </div>
+
+    <script>
+        const options = document.querySelectorAll('.option');
+        const continueBtn = document.querySelector('.continue-btn');
+        let selectedLevel = null;
+
+        options.forEach(option => {
+            option.addEventListener('click', function() {
+                // Remove selected class from all options
+                options.forEach(opt => opt.classList.remove('selected'));
+                
+                // Add selected class to clicked option
+                this.classList.add('selected');
+                
+                // Store selected level
+                selectedLevel = this.dataset.level;
+                
+                // Enable continue button
+                continueBtn.classList.remove('disabled');
+                
+                // Add haptic feedback (if supported)
+                if (navigator.vibrate) {
+                    navigator.vibrate(50);
+                }
+            });
+        });
+
+        continueBtn.addEventListener('click', function() {
+            if (selectedLevel && !this.classList.contains('disabled')) {
+                // Show loading state
+                this.textContent = 'Loading...';
+                this.style.opacity = '0.7';
+                
+                // Navigate to Select4.html after a brief delay
+                setTimeout(() => {
+                    window.location.href = 'Select4.html';
+                }, 500);
+            }
+        });
+
+        // Skip button functionality
+        document.querySelector('.skip-btn').addEventListener('click', function() {
+            console.log('Skipped fitness level selection');
+            // Navigate to next step without selection
+        });
+    </script>
+</body>
+</html>

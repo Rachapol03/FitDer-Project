@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NutriTracker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #000;
+            color: #fff;
+            width: 100%;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            position: relative;
+        }
+
+        @media (min-width: 376px) {
+            body {
+                max-width: 375px;
+                margin: 0 auto;
+            }
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 60px 20px 20px;
+            background: linear-gradient(180deg, rgba(0,0,0,1) 0%, rgba(20,20,20,1) 100%);
+        }
+
+        .profile-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .profile-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(45deg, #fff, #f0f0f0);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: #000;
+        }
+
+        .greeting {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .notification-btn {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.1);
+            border: none;
+            border-radius: 50%;
+            color: #fff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+        }
+
+        /* Top Navigation */
+        .top-nav {
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+            padding: 10px 15px;
+            background: linear-gradient(180deg, rgba(0,0,0,1) 0%, rgba(20,20,20,1) 100%);
+        }
+
+        .nav-tab {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 8px 12px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 8px;
+            color: rgba(255,255,255,0.7);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-tab.active {
+            background: rgba(255,255,255,0.9);
+            color: #000;
+            border-color: rgba(255,255,255,0.4);
+        }
+
+        .nav-tab {
+            text-decoration: none;
+        }
+
+        .nav-tab span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* Activity Section */
+        .activity-section {
+            padding: 5px 20px;
+        }
+
+        .activity-title {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        /* Date Navigation */
+        .date-nav {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+        }
+
+        .date-item {
+            min-width: 60px;
+            height: 60px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .date-item.active {
+            background: #fff;
+            color: #000;
+            transform: scale(1.05);
+        }
+
+        .date-item .day {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .date-item .weekday {
+            font-size: 10px;
+            opacity: 0.7;
+            margin-top: 2px;
+        }
+
+        /* Category Tabs */
+        .category-tabs {
+            display: flex;
+            gap: 8px;
+            margin: 5px 0 15px;
+            background: rgba(255,255,255,0.05);
+            padding: 4px;
+            border-radius: 24px;
+            backdrop-filter: blur(10px);
+        }
+
+        .category-tab {
+            flex: 1;
+            padding: 12px 16px;
+            background: transparent;
+            border: none;
+            border-radius: 20px;
+            color: rgba(255,255,255,0.7);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            text-align: center;
+        }
+
+        .category-tab.active {
+            background: #fff;
+            color: #000;
+        }
+
+        /* Meal Sections */
+        .meal-section {
+            margin-bottom: 35px;
+        }
+
+        .meal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 0 5px;
+        }
+
+        .meal-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .add-btn {
+            width: 32px;
+            height: 32px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 50%;
+            color: #fff;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .add-btn:hover {
+            background: rgba(255,255,255,0.2);
+            transform: scale(1.1);
+        }
+
+        /* Food Cards */
+        .food-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 12px;
+            backdrop-filter: blur(20px);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .food-card:hover {
+            transform: translateY(-2px);
+            border-color: rgba(255,255,255,0.3);
+        }
+
+        .food-card-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .food-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            background: linear-gradient(45deg, rgba(255,255,255,0.2), rgba(255,255,255,0.1));
+        }
+
+        .food-info h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .food-info .calories {
+            font-size: 12px;
+            color: rgba(255,255,255,0.7);
+        }
+
+        /* Nutrition Bars */
+        .nutrition-bars {
+            display: flex;
+            gap: 20px;
+            align-items: end;
+        }
+
+        .nutrition-item {
+            flex: 1;
+            text-align: center;
+        }
+
+        .nutrition-bar {
+            width: 100%;
+            height: 40px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+            margin-bottom: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nutrition-fill {
+            height: 100%;
+            border-radius: 20px;
+            transition: all 0.8s ease;
+        }
+
+        .protein { background: linear-gradient(180deg, #4ADE80, #22C55E); }
+        .fats { background: linear-gradient(180deg, #F97316, #EA580C); }
+        .carbs { background: linear-gradient(180deg, #FACC15, #EAB308); }
+
+        .nutrition-value {
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .nutrition-label {
+            font-size: 10px;
+            color: rgba(255,255,255,0.6);
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(180deg, rgba(20,20,20,1) 0%, rgba(0,0,0,1) 100%);
+            padding: 20px;
+            display: flex;
+            justify-content: space-around;
+            backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-item.active {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .nav-icon {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .nav-item {
+            text-decoration: none;
+            color: rgba(255,255,255,0.7);
+        }
+
+        .nav-label {
+            font-size: 10px;
+            color: rgba(255,255,255,0.7);
+        }
+
+        .nav-item.active .nav-label {
+            color: #fff;
+        }
+
+        /* Scrollable Content */
+        .content-scroll {
+            height: calc(100vh - 230px);
+            overflow-y: auto;
+            padding: 0 15px 150px;
+            -webkit-overflow-scrolling: touch;
+            margin-top: 5px;
+        }
+
+        .content-scroll::-webkit-scrollbar {
+            display: none;
+        }
+
+        @media (max-height: 700px) {
+            .content-scroll {
+                height: calc(100vh - 220px);
+                padding-bottom: 180px;
+            }
+        }
+
+        /* Animations */
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .food-card {
+            animation: slideUp 0.6s ease forwards;
+        }
+
+        .food-card:nth-child(1) { animation-delay: 0.1s; }
+        .food-card:nth-child(2) { animation-delay: 0.2s; }
+        .food-card:nth-child(3) { animation-delay: 0.3s; }
+    </style>
+</head>
+<body>
+
+
+    <!-- Top Navigation -->
+    <div class="top-nav">
+        <a href="Main.html" class="nav-tab">
+            <span>📊 Main</span>
+        </a>
+        <div class="nav-tab active">
+            <span>📈 Summary</span>
+        </div>
+        <a href="GuideWorkout.html" class="nav-tab">
+            <span>📖 Guide</span>
+        </a>
+    </div>
+
+    <!-- Activity Section -->
+    <div class="activity-section">
+        <!-- Category Tabs -->
+        <div class="category-tabs">
+            <a href="SummaryWorkout.html" class="category-tab">Workout</a>
+            <button class="category-tab active">Food</button>
+            <a href="SummaryHealth.html" class="category-tab">Health</a>
+        </div>
+        
+        <!-- Date Navigation -->
+        <div class="date-nav">
+            <div class="date-item">
+                <div class="day">31</div>
+                <div class="weekday">SUN</div>
+            </div>
+            <div class="date-item">
+                <div class="day">1</div>
+                <div class="weekday">MON</div>
+            </div>
+            <div class="date-item">
+                <div class="day">2</div>
+                <div class="weekday">TUE</div>
+            </div>
+            <div class="date-item">
+                <div class="day">3</div>
+                <div class="weekday">WED</div>
+            </div>
+            <div class="date-item">
+                <div class="day">4</div>
+                <div class="weekday">THU</div>
+            </div>
+            <div class="date-item active">
+                <div class="day">5</div>
+                <div class="weekday">FRI</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scrollable Content -->
+    <div class="content-scroll">
+        <!-- Breakfast Section -->
+        <div class="meal-section">
+            <div class="meal-header">
+                <h2 class="meal-title">Breakfast</h2>
+                <button class="add-btn">+</button>
+            </div>
+            
+            <div class="food-card">
+                <div class="food-card-header">
+                    <div class="food-icon">🥞</div>
+                    <div class="food-info">
+                        <h3>Pancakes</h3>
+                        <div class="calories">294 kcal - 100g</div>
+                    </div>
+                </div>
+                <div class="nutrition-bars">
+                    <div class="nutrition-item">
+                        <div class="nutrition-bar">
+                            <div class="nutrition-fill protein" style="height: 60%;"></div>
+                        </div>
+                        <div class="nutrition-value">12g</div>
+                        <div class="nutrition-label">Protein</div>
+                    </div>
+                    <div class="nutrition-item">
+                        <div class="nutrition-bar">
+                            <div class="nutrition-fill fats" style="height: 40%;"></div>
+                        </div>
+                        <div class="nutrition-value">22g</div>
+                        <div class="nutrition-label">Fats</div>
+                    </div>
+                    <div class="nutrition-item">
+                        <div class="nutrition-bar">
+                            <div class="nutrition-fill carbs" style="height: 80%;"></div>
+                        </div>
+                        <div class="nutrition-value">42g</div>
+                        <div class="nutrition-label">Carbs</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lunch Section -->
+        <div class="meal-section">
+            <div class="meal-header">
+                <h2 class="meal-title">Lunch</h2>
+                <button class="add-btn">+</button>
+            </div>
+            
+            <div class="food-card">
+                <div class="food-card-header">
+                    <div class="food-icon">🥗</div>
+                    <div class="food-info">
+                        <h3>Salad with Eggs</h3>
+                        <div class="calories">185 kcal - 100g</div>
+                    </div>
+                </div>
+                <div class="nutrition-bars">
+                    <div class="nutrition-item">
+                        <div class="nutrition-bar">
+                            <div class="nutrition-fill protein" style="height: 50%;"></div>
+                        </div>
+                        <div class="nutrition-value">12g</div>
+                        <div class="nutrition-label">Protein</div>
+                    </div>
+                    <div class="nutrition-item">
+                        <div class="nutrition-bar">
+                            <div class="nutrition-fill fats" style="height: 35%;"></div>
+                        </div>
+                        <div class="nutrition-value">22g</div>
+                        <div class="nutrition-label">Fats</div>
+                    </div>
+                    <div class="nutrition-item">
+                        <div class="nutrition-bar">
+                            <div class="nutrition-fill carbs" style="height: 70%;"></div>
+                        </div>
+                        <div class="nutrition-value">42g</div>
+                        <div class="nutrition-label">Carbs</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dinner Section -->
+        <div class="meal-section">
+            <div class="meal-header">
+                <h2 class="meal-title">Dinner</h2>
+                <button class="add-btn">+</button>
+            </div>
+            
+            <div class="food-card">
+                <div class="food-card-header">
+                    <div class="food-icon">🥑</div>
+                    <div class="food-info">
+                        <h3>Avocado Dish</h3>
+                        <div class="calories">234 kcal - 100g</div>
+                    </div>
+                </div>
+                <div class="nutrition-bars">
+                    <div class="nutrition-item">
+                        <div class="nutrition-bar">
+                            <div class="nutrition-fill protein" style="height: 30%;"></div>
+                        </div>
+                        <div class="nutrition-value">12g</div>
+                        <div class="nutrition-label">Protein</div>
+                    </div>
+                    <div class="nutrition-item">
+                        <div class="nutrition-bar">
+                            <div class="nutrition-fill fats" style="height: 85%;"></div>
+                        </div>
+                        <div class="nutrition-value">32g</div>
+                        <div class="nutrition-label">Fats</div>
+                    </div>
+                    <div class="nutrition-item">
+                        <div class="nutrition-bar">
+                            <div class="nutrition-fill carbs" style="height: 25%;"></div>
+                        </div>
+                        <div class="nutrition-value">12g</div>
+                        <div class="nutrition-label">Carbs</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+        <a href="Main.html" class="nav-item">
+            <div class="nav-icon">🏠</div>
+            <div class="nav-label">Home</div>
+        </a>
+        <a href="Chatbot.html" class="nav-item">
+            <div class="nav-icon">🤖</div>
+            <div class="nav-label">Chatbot</div>
+        </a>
+        <a href="PoseSelect.html" class="nav-item">
+            <div class="nav-icon">💪</div>
+            <div class="nav-label">Workout</div>
+        </a>
+        <a href="Notification.html" class="nav-item">
+            <div class="nav-icon">🔔</div>
+            <div class="nav-label">Notification</div>
+        </a>
+        <a href="Profile.html" class="nav-item">
+            <div class="nav-icon">👤</div>
+            <div class="nav-label">Profile</div>
+        </a>
+    </div>
+
+    <script>
+        // Add interactive functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Top navigation
+            const topNavTabs = document.querySelectorAll('.nav-tab');
+            topNavTabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    topNavTabs.forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+
+            // Date navigation
+            const dateItems = document.querySelectorAll('.date-item');
+            dateItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    dateItems.forEach(d => d.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+
+            // Category tabs
+            const categoryTabs = document.querySelectorAll('.category-tab');
+            categoryTabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    categoryTabs.forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+
+            // Bottom navigation
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    navItems.forEach(n => n.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+
+            // Food card interactions
+            const foodCards = document.querySelectorAll('.food-card');
+            foodCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    this.style.transform = 'scale(0.98)';
+                    setTimeout(() => {
+                        this.style.transform = 'translateY(-2px)';
+                    }, 150);
+                });
+            });
+
+            // Add button animations
+            const addBtns = document.querySelectorAll('.add-btn');
+            addBtns.forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    this.style.transform = 'scale(1.2) rotate(90deg)';
+                    setTimeout(() => {
+                        this.style.transform = 'scale(1.1)';
+                    }, 200);
+                });
+            });
+        });
+    </script>
+</body>
+</html>

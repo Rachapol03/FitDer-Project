@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Fitness App</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #000000;
+            color: #ffffff;
+            overflow: hidden;
+            position: fixed;
+            width: 100%;
+            height: 100%;
+        }
+
+        .mobile-container {
+            width: 100%;
+            height: 100vh;
+            height: -webkit-fill-available;
+            margin: 0;
+            background: #000000;
+            position: relative;
+            box-shadow: none;
+            overflow: hidden;
+        }
+
+        .header {
+            height: 100px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .header-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #ffffff;
+            text-align: center;
+        }
+
+        .main-content {
+            padding: 16px;
+            height: calc(100vh - 200px);
+            height: calc(-webkit-fill-available - 200px);
+            overflow-y: auto;
+            overflow-x: hidden;
+            position: relative;
+            -webkit-overflow-scrolling: touch;
+            overscroll-behavior: contain;
+        }
+
+        .stats-section {
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+            border-radius: 16px;
+            padding: 16px 12px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.15);
+            text-align: center;
+            width: 100%;
+        }
+
+        .stats-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 12px;
+        }
+
+        .stats-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+            padding: 0 4px;
+        }
+
+        .stat-item {
+            flex: 1;
+            background: rgba(0,0,0,0.3);
+            border-radius: 12px;
+            padding: 12px 8px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.1);
+            min-width: 0;
+        }
+
+        .stat-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: rgba(255,255,255,0.6);
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .exercise-selection {
+            margin-bottom: 30px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            padding-bottom: 5px;
+            overscroll-behavior-x: contain;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .filter-tab {
+            flex-shrink: 0;
+            padding: 8px 16px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            color: rgba(255,255,255,0.7);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .filter-tab.active {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            color: #000;
+            border-color: transparent;
+            transform: scale(1.05);
+        }
+
+        .filter-tab:hover:not(.active) {
+            background: rgba(255,255,255,0.15);
+            color: rgba(255,255,255,0.9);
+        }
+
+        .exercise-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+        }
+
+        .exercise-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.06) 100%);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 16px;
+            padding: 16px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            touch-action: manipulation;
+        }
+
+        .exercise-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            transition: left 0.6s;
+        }
+
+        .exercise-card:hover::before {
+            left: 100%;
+        }
+
+        .exercise-card:hover {
+            transform: translateY(-4px);
+            background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.1) 100%);
+            box-shadow: 0 15px 35px rgba(255,255,255,0.1);
+            border-color: rgba(255,255,255,0.3);
+        }
+
+        .exercise-card.selected {
+            background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+            border-color: #4ade80;
+            box-shadow: 0 10px 25px rgba(74, 222, 128, 0.3);
+        }
+
+        .exercise-card.selected .exercise-name,
+        .exercise-card.selected .exercise-subtitle,
+        .exercise-card.selected .exercise-meta {
+            color: #000;
+        }
+
+        .exercise-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.1) 100%);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .exercise-card:hover .exercise-icon {
+            transform: scale(1.1) rotate(5deg);
+            background: linear-gradient(135deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.15) 100%);
+        }
+
+        .exercise-card.selected .exercise-icon {
+            background: rgba(0,0,0,0.1);
+            border-color: rgba(0,0,0,0.1);
+        }
+
+        .exercise-info {
+            flex: 1;
+        }
+
+        .exercise-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 4px;
+        }
+
+        .exercise-subtitle {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.6);
+            font-weight: 400;
+            margin-bottom: 8px;
+        }
+
+        .exercise-meta {
+            display: flex;
+            gap: 16px;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .exercise-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-shrink: 0;
+        }
+
+        .difficulty-badge {
+            padding: 4px 8px;
+            border-radius: 8px;
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .difficulty-easy {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+        }
+
+        .difficulty-medium {
+            background: rgba(251, 191, 36, 0.2);
+            color: #fbbf24;
+        }
+
+        .difficulty-hard {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+
+        .start-btn {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            border: none;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 16px;
+        }
+
+        .start-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 5px 15px rgba(255,255,255,0.3);
+        }
+
+        .floating-start {
+            position: fixed;
+            bottom: 90px;
+            right: 16px;
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+            border: none;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 24px;
+            color: #000;
+            box-shadow: 0 8px 20px rgba(74, 222, 128, 0.4);
+            z-index: 1001;
+            opacity: 0;
+            transform: scale(0);
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .floating-start.show {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .floating-start:hover {
+            transform: scale(1.1);
+            box-shadow: 0 15px 35px rgba(74, 222, 128, 0.5);
+        }
+
+
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .exercise-card {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        .exercise-card:nth-child(1) { animation-delay: 0.1s; }
+        .exercise-card:nth-child(2) { animation-delay: 0.2s; }
+        .exercise-card:nth-child(3) { animation-delay: 0.3s; }
+        .exercise-card:nth-child(4) { animation-delay: 0.4s; }
+        .exercise-card:nth-child(5) { animation-delay: 0.5s; }
+        .exercise-card:nth-child(6) { animation-delay: 0.6s; }
+
+        .floating-start.show {
+            animation: pulse 2s infinite;
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            width: 100%;
+            background: #000000;
+            backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 12px 20px;
+            padding-bottom: calc(12px + env(safe-area-inset-bottom, 0));
+            z-index: 100;
+        }
+        
+        .nav-items {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            gap: 8px;
+        }
+
+        .nav-items {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            color: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            flex: 1;
+        }
+
+        .nav-item.active {
+            color: #ffffff;
+        }
+
+        .nav-item:hover {
+            color: #ffffff;
+            transform: translateY(-2px);
+        }
+
+        .nav-icon {
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0.7;
+        }
+
+        .nav-item.active .nav-icon {
+            opacity: 1;
+        }
+
+        .nav-label {
+            font-size: 10px;
+            font-weight: 500;
+        }
+
+        /* Media query for responsive design */
+        @media screen and (max-width: 100vh) {
+            .mobile-container {
+                max-width: 100%;
+                width: 100%;
+            }
+            .main-content {
+                padding: 12px;
+            }
+            .header {
+                padding: 0 12px;
+            }
+            .exercise-card {
+                margin: 0 auto;
+                width: 100%;
+            }
+        }
+
+        /* Background decoration */
+        .bg-decoration {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            opacity: 0.03;
+            background-image: 
+                radial-gradient(circle at 20% 80%, white 1px, transparent 1px),
+                radial-gradient(circle at 80% 20%, white 1px, transparent 1px),
+                radial-gradient(circle at 40% 40%, white 1px, transparent 1px);
+            background-size: 50px 50px, 80px 80px, 60px 60px;
+            pointer-events: none;
+        }
+
+        .filter-tabs::-webkit-scrollbar {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="mobile-container">
+        <div class="bg-decoration"></div>
+        
+        <div class="header">
+            <h1 class="header-title">Fitness</h1>
+        </div>
+
+        <div class="main-content">
+            <div class="stats-section">
+                <h2 class="stats-title">Today's Progress</h2>
+                <div class="stats-row">
+                    <div class="stat-item">
+                        <div class="stat-value">12</div>
+                        <div class="stat-label">Workouts</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">240</div>
+                        <div class="stat-label">Minutes</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">850</div>
+                        <div class="stat-label">Calories</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="exercise-selection">
+                <div class="section-header">
+                    <h2 class="section-title">Choose Exercises</h2>
+                </div>
+                
+                <div class="filter-tabs">
+                    <div class="filter-tab active" data-filter="all">All</div>
+                    <div class="filter-tab" data-filter="strength">Strength</div>
+                    <div class="filter-tab" data-filter="cardio">Cardio</div>
+                    <div class="filter-tab" data-filter="flexibility">Flexibility</div>
+                    <div class="filter-tab" data-filter="core">Core</div>
+                </div>
+
+                <div class="exercise-grid" id="exerciseGrid">
+                    <div class="exercise-card" data-category="strength">
+                        <div class="exercise-icon">🏋️</div>
+                        <div class="exercise-info">
+                            <div class="exercise-name">Squat</div>
+                            <div class="exercise-subtitle">Lower Body Strength</div>
+                            <div class="exercise-meta">
+                                <span>15 reps</span>
+                                <span>3 sets</span>
+                                <span>5 min</span>
+                            </div>
+                        </div>
+                        <div class="exercise-actions">
+                            <div class="difficulty-badge difficulty-medium">Medium</div>
+                            <button class="start-btn">▶️</button>
+                        </div>
+                    </div>
+
+                    <div class="exercise-card" data-category="strength">
+                        <div class="exercise-icon">💪</div>
+                        <div class="exercise-info">
+                            <div class="exercise-name">Push Up</div>
+                            <div class="exercise-subtitle">Upper Body Power</div>
+                            <div class="exercise-meta">
+                                <span>10 reps</span>
+                                <span>3 sets</span>
+                                <span>4 min</span>
+                            </div>
+                        </div>
+                        <div class="exercise-actions">
+                            <div class="difficulty-badge difficulty-easy">Easy</div>
+                            <button class="start-btn">▶️</button>
+                        </div>
+                    </div>
+
+                    <div class="exercise-card selected" data-category="core">
+                        <div class="exercise-icon">⏱️</div>
+                        <div class="exercise-info">
+                            <div class="exercise-name">Plank</div>
+                            <div class="exercise-subtitle">Core Stability</div>
+                            <div class="exercise-meta">
+                                <span>60 sec</span>
+                                <span>3 sets</span>
+                                <span>6 min</span>
+                            </div>
+                        </div>
+                        <div class="exercise-actions">
+                            <div class="difficulty-badge difficulty-medium">Medium</div>
+                            <button class="start-btn">✓</button>
+                        </div>
+                    </div>
+
+                    <div class="exercise-card" data-category="core">
+                        <div class="exercise-icon">🏃</div>
+                        <div class="exercise-info">
+                            <div class="exercise-name">Sit Up</div>
+                            <div class="exercise-subtitle">Abdominal Training</div>
+                            <div class="exercise-meta">
+                                <span>20 reps</span>
+                                <span>3 sets</span>
+                                <span>7 min</span>
+                            </div>
+                        </div>
+                        <div class="exercise-actions">
+                            <div class="difficulty-badge difficulty-hard">Hard</div>
+                            <button class="start-btn">▶️</button>
+                        </div>
+                    </div>
+
+                    <div class="exercise-card" data-category="strength">
+                        <div class="exercise-icon">🏋️</div>
+                        <div class="exercise-info">
+                            <div class="exercise-name">Dumbbell</div>
+                            <div class="exercise-subtitle">Full Body Strength</div>
+                            <div class="exercise-meta">
+                                <span>12 reps</span>
+                                <span>4 sets</span>
+                                <span>8 min</span>
+                            </div>
+                        </div>
+                        <div class="exercise-actions">
+                            <div class="difficulty-badge difficulty-hard">Hard</div>
+                            <button class="start-btn">▶️</button>
+                        </div>
+                    </div>
+
+                    <div class="exercise-card" data-category="flexibility">
+                        <div class="exercise-icon">🧘</div>
+                        <div class="exercise-info">
+                            <div class="exercise-name">Yoga Flow</div>
+                            <div class="exercise-subtitle">Flexibility & Balance</div>
+                            <div class="exercise-meta">
+                                <span>10 poses</span>
+                                <span>1 set</span>
+                                <span>12 min</span>
+                            </div>
+                        </div>
+                        <div class="exercise-actions">
+                            <div class="difficulty-badge difficulty-easy">Easy</div>
+                            <button class="start-btn">▶️</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <button class="floating-start show" id="floatingStart">🚀</button>
+
+        <!-- Bottom Navigation -->
+        <div class="bottom-nav">
+            <div class="nav-items">
+                <a href="Main.html" class="nav-item">
+                    <div class="nav-icon">🏠</div>
+                    <div class="nav-label">Home</div>
+                </a>
+                <a href="Chatbot.html" class="nav-item">
+                    <div class="nav-icon">🤖</div>
+                    <div class="nav-label">Chatbot</div>
+                </a>
+                <a href="PoseSelect.html" class="nav-item active">
+                    <div class="nav-icon">💪</div>
+                    <div class="nav-label">Workout</div>
+                </a>
+                <a href="Notification.html" class="nav-item">
+                    <div class="nav-icon">🔔</div>
+                    <div class="nav-label">Notification</div>
+                </a>
+                <a href="Profile.html" class="nav-item">
+                    <div class="nav-icon">👤</div>
+                    <div class="nav-label">Profile</div>
+                </a>
+            </div>
+        </div>
+
+    <script>
+        // Exercise selection functionality
+        const exerciseCards = document.querySelectorAll('.exercise-card');
+        const filterTabs = document.querySelectorAll('.filter-tab');
+        const floatingStart = document.getElementById('floatingStart');
+        let selectedExercise = null; // Track current selected exercise
+
+        // Handle exercise card clicks
+        exerciseCards.forEach(card => {
+            card.addEventListener('click', (e) => {
+                if (e.target.classList.contains('start-btn')) return;
+                
+                // Remove selected class and reset button from all cards
+                exerciseCards.forEach(otherCard => {
+                    if (otherCard !== card && otherCard.classList.contains('selected')) {
+                        otherCard.classList.remove('selected');
+                        otherCard.querySelector('.start-btn').textContent = '▶️';
+                    }
+                });
+                
+                // Toggle current card
+                card.classList.toggle('selected');
+                
+                // Update button icon
+                const btn = card.querySelector('.start-btn');
+                if (card.classList.contains('selected')) {
+                    btn.textContent = '✓';
+                } else {
+                    btn.textContent = '▶️';
+                }
+                
+                updateFloatingButton();
+            });
+        });
+
+        // Handle filter tabs
+        filterTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Update active tab
+                filterTabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                
+                // Filter exercises
+                const filter = tab.dataset.filter;
+                exerciseCards.forEach(card => {
+                    if (filter === 'all' || card.dataset.category === filter) {
+                        card.style.display = 'flex';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        });
+
+        // Update floating start button
+        function updateFloatingButton() {
+            const selectedCount = document.querySelectorAll('.exercise-card.selected').length;
+            if (selectedCount > 0) {
+                floatingStart.classList.add('show');
+            } else {
+                floatingStart.classList.remove('show');
+            }
+        }
+
+        // Handle floating start button
+        floatingStart.addEventListener('click', () => {
+            const selectedCard = document.querySelector('.exercise-card.selected');
+            if (selectedCard) {
+                const exerciseName = selectedCard.querySelector('.exercise-name').textContent;
+                alert(`Starting workout: ${exerciseName}`);
+            }
+        });
+
+        // Individual start buttons
+        document.querySelectorAll('.start-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const exerciseName = e.target.closest('.exercise-card').querySelector('.exercise-name').textContent;
+                alert(`Starting ${exerciseName} exercise!`);
+            });
+        });
+
+        // Initialize
+        updateFloatingButton();
+    </script>
+</body>
+</html>

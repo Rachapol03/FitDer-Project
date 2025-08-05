@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Social App</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #000;
+            color: #fff;
+            overflow-x: hidden;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Smooth scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        .mobile-container {
+            width: 100vw;
+            height: 100vh;
+            background: #000;
+            position: relative;
+            overflow-y: auto;
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* Custom scrollbar for webkit browsers */
+        .mobile-container::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .mobile-container::-webkit-scrollbar-track {
+            background: #1a1a1a;
+        }
+
+        .mobile-container::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 2px;
+        }
+
+        .mobile-container::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+
+
+        /* Header */
+        .header {
+            padding: 16px;
+            background: #000;
+            border-bottom: 1px solid #1a1a1a;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        /* Top Navigation Tabs */
+        .top-nav-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            padding: 0 4px;
+        }
+
+        .top-nav-tab {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 8px 4px;
+            background: #000;
+            border: 1px solid #333;
+            border-radius: 16px;
+            color: #888;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 0;
+            text-align: center;
+        }
+
+        .top-nav-tab.active {
+            background: #1a1a1a;
+            color: #fff;
+            border-color: #555;
+        }
+
+        .top-nav-tab:hover {
+            background: #1a1a1a;
+            color: #fff;
+            border-color: #555;
+        }
+
+        .top-nav-tab.active:hover {
+            background: #333;
+            border-color: #666;
+        }
+
+        .tab-icon {
+            font-size: 20px;
+            margin-bottom: 4px;
+        }
+
+        .top-nav-tab span {
+            font-size: 11px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100%;
+        }
+
+        /* Stories */
+        .stories {
+            display: flex;
+            gap: 12px;
+            padding: 16px;
+            overflow-x: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .stories::-webkit-scrollbar {
+            display: none;
+        }
+
+        .story {
+            flex-shrink: 0;
+            text-align: center;
+        }
+
+        .story-avatar {
+            width: 60px;
+            height: 60px;
+            border: 2px solid #333;
+            border-radius: 50%;
+            background: #1a1a1a;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .story-avatar:hover {
+            border-color: #ff6b35;
+            transform: scale(1.05);
+        }
+
+        .story-text {
+            font-size: 12px;
+            color: #888;
+        }
+
+
+
+        /* Post Section */
+        .post-section {
+            padding: 16px;
+            background: #000;
+        }
+
+        .post-input {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .post-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: #333;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #888;
+        }
+
+        .user-name {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .post-textarea {
+            width: 100%;
+            background: none;
+            border: none;
+            color: #888;
+            font-size: 14px;
+            resize: none;
+            outline: none;
+            margin-bottom: 16px;
+            min-height: 60px;
+        }
+
+        .post-textarea::placeholder {
+            color: #666;
+        }
+
+        /* Post Actions */
+        .post-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 16px;
+        }
+
+        .action-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: none;
+            border: none;
+            color: #888;
+            font-size: 12px;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .action-btn:hover {
+            color: #ff6b35;
+        }
+
+        .action-icon {
+            width: 20px;
+            height: 20px;
+            background: #333;
+            border-radius: 4px;
+        }
+
+        .post-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-cancel {
+            background: #333;
+            color: #fff;
+        }
+
+        .btn-cancel:hover {
+            background: #444;
+        }
+
+        .btn-post {
+            background: #ff6b35;
+            color: #fff;
+        }
+
+        .btn-post:hover {
+            background: #e55a2e;
+            transform: translateY(-1px);
+        }
+
+        /* Content Area */
+        .content {
+            flex: 1;
+            padding: 16px;
+            background: #0a0a0a;
+            min-height: 60vh;
+            padding-bottom: 120px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #666;
+        }
+
+        .empty-icon {
+            width: 60px;
+            height: 60px;
+            background: #1a1a1a;
+            border-radius: 50%;
+            margin: 0 auto 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            width: 100%;
+            background: #000;
+            border-top: 1px solid #1a1a1a;
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 8px;
+            padding-bottom: env(safe-area-inset-bottom, 12px);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            background: none;
+            border: none;
+            color: #666;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .nav-item.active {
+            color: #ff6b35;
+        }
+
+        .nav-item:hover {
+            color: #fff;
+        }
+
+        .nav-icon {
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 2px;
+        }
+
+        .nav-text {
+            font-size: 10px;
+            font-weight: 500;
+            text-align: center;
+            line-height: 1.2;
+        }
+
+        /* Home Indicator */
+        .home-indicator {
+            position: fixed;
+            bottom: 4px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 134px;
+            height: 5px;
+            background: #333;
+            border-radius: 3px;
+            bottom: env(safe-area-inset-bottom, 4px);
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .post-input {
+            animation: fadeIn 0.5s ease;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-text {
+                font-size: 9px;
+            }
+            
+            .nav-icon {
+                font-size: 18px;
+            }
+            
+            .post-actions {
+                flex-direction: column;
+                gap: 12px;
+            }
+            
+            .action-buttons {
+                justify-content: space-between;
+            }
+            
+            .post-buttons {
+                align-self: flex-end;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stories {
+                padding: 12px;
+            }
+            
+            .story-avatar {
+                width: 50px;
+                height: 50px;
+            }
+            
+            .nav-tab {
+                padding: 6px 12px;
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="mobile-container">
+
+
+        <!-- Header -->
+        <div class="header">
+            <!-- Top Navigation Tabs -->
+            <div class="top-nav-tabs">
+                <a href="Main.html" class="top-nav-tab active" style="text-decoration: none;">
+                    <div class="tab-icon">📊</div>
+                    <span>Main</span>
+                </a>
+                <a href="SummaryWorkout.html" class="top-nav-tab" style="text-decoration: none;">
+                    <div class="tab-icon">📈</div>
+                    <span>Summary</span>
+                </a>
+                <a href="GuideWorkout.html" class="top-nav-tab" style="text-decoration: none;">
+                    <div class="tab-icon">📖</div>
+                    <span>Guide</span>
+                </a>
+            </div>
+            
+            <h1>Social</h1>
+        </div>
+
+        <!-- Stories -->
+        <div class="stories">
+            <div class="story">
+                <div class="story-avatar">📷</div>
+                <div class="story-text">Add Story</div>
+            </div>
+            <div class="story">
+                <div class="story-avatar">👤</div>
+                <div class="story-text">Friend 1</div>
+            </div>
+            <div class="story">
+                <div class="story-avatar">👤</div>
+                <div class="story-text">Friend 2</div>
+            </div>
+            <div class="story">
+                <div class="story-avatar">👤</div>
+                <div class="story-text">Friend 3</div>
+            </div>
+        </div>
+
+
+
+        <!-- Post Section -->
+        <div class="post-section">
+            <div class="post-input">
+                <div class="post-header">
+                    <div class="user-avatar">👤</div>
+                    <div class="user-name">TestName</div>
+                </div>
+                <textarea class="post-textarea" placeholder="What's on your mind?"></textarea>
+                <div class="post-actions">
+                    <div class="action-buttons">
+                        <button class="action-btn">
+                            <div class="action-icon"></div>
+                            <span>Add Photo</span>
+                        </button>
+                        <button class="action-btn">
+                            <div class="action-icon"></div>
+                            <span>Add Video</span>
+                        </button>
+                        <button class="action-btn">
+                            <div class="action-icon"></div>
+                            <span>Add Feeling</span>
+                        </button>
+                    </div>
+                    <div class="post-buttons">
+                        <a href="GuideCommunity.html" class="btn btn-cancel" style="text-decoration: none;">Cancel</a>
+                        <button class="btn btn-post">Post</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <div class="empty-state">
+                <div class="empty-icon">📱</div>
+                <h3>No posts yet</h3>
+                <p>Start sharing your thoughts!</p>
+            </div>
+        </div>
+
+        <!-- Bottom Navigation -->
+        <div class="bottom-nav">
+            <a href="Main.html" class="nav-item" style="text-decoration: none;">
+                <div class="nav-icon">🏠</div>
+                <div class="nav-text" style="white-space: pre-line;">Home</div>
+            </a>
+            <a href="Chatbot.html" class="nav-item" style="text-decoration: none;">
+                <div class="nav-icon">🤖</div>
+                <div class="nav-text" style="white-space: pre-line;">Chatbot</div>
+            </a>
+            <a href="PoseSelect.html" class="nav-item" style="text-decoration: none;">
+                <div class="nav-icon">💪</div>
+                <div class="nav-text" style="white-space: pre-line;">Workout</div>
+            </a>
+            <a href="Notification.html" class="nav-item" style="text-decoration: none;">
+                <div class="nav-icon">�</div>
+                <div class="nav-text" style="white-space: pre-line;">Notification</div>
+            </a>
+            <a href="Profile.html" class="nav-item" style="text-decoration: none;">
+                <div class="nav-icon">👤</div>
+                <div class="nav-text" style="white-space: pre-line;">Profile</div>
+            </a>
+        </div>
+
+        <!-- Home Indicator -->
+        <div class="home-indicator"></div>
+    </div>
+
+    <script>
+        // Top navigation tabs functionality
+        document.querySelectorAll('.top-nav-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.top-nav-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+            });
+        });
+
+        // Smooth scroll to top when clicking header
+        document.querySelector('.header h1').addEventListener('click', () => {
+            document.querySelector('.mobile-container').scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+
+        // Add scroll to top button functionality
+        let scrollToTopBtn = document.createElement('button');
+        scrollToTopBtn.innerHTML = '↑';
+        scrollToTopBtn.style.cssText = `
+            position: fixed;
+            bottom: 100px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #ff6b35;
+            color: white;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 1000;
+        `;
+        document.body.appendChild(scrollToTopBtn);
+
+        // Show/hide scroll to top button
+        const container = document.querySelector('.mobile-container');
+        container.addEventListener('scroll', () => {
+            if (container.scrollTop > 300) {
+                scrollToTopBtn.style.opacity = '1';
+            } else {
+                scrollToTopBtn.style.opacity = '0';
+            }
+        });
+
+        scrollToTopBtn.addEventListener('click', () => {
+            container.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+
+        // Tab functionality
+        document.querySelectorAll('.nav-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+            });
+        });
+
+        // Bottom navigation
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', () => {
+                document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+            });
+        });
+
+        // Post functionality
+        document.querySelector('.btn-post').addEventListener('click', () => {
+            const textarea = document.querySelector('.post-textarea');
+            if (textarea.value.trim()) {
+                alert('Post successful!');
+                textarea.value = '';
+            }
+        });
+
+        // Removed cancel button event listener as it now uses anchor tag for navigation
+
+        // Auto-resize textarea
+        const textarea = document.querySelector('.post-textarea');
+        textarea.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = this.scrollHeight + 'px';
+        });
+
+        // Story hover effects
+        document.querySelectorAll('.story-avatar').forEach(story => {
+            story.addEventListener('click', () => {
+                story.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    story.style.transform = 'scale(1.05)';
+                }, 100);
+                setTimeout(() => {
+                    story.style.transform = 'scale(1)';
+                }, 200);
+            });
+        });
+    </script>
+</body>
+</html>

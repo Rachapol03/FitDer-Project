@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weight Goal App</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            color: #ffffff;
+            height: 100vh;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        .container {
+            width: 100%;
+            height: 100vh;
+            max-width: 100%;
+            margin: 0 auto;
+            background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 50%, #2d2d2d 100%);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 50px rgba(255, 255, 255, 0.1);
+        }
+
+        .header {
+            padding: 40px 28px 30px;
+            position: relative;
+        }
+
+        .step-indicator {
+            font-size: 12px;
+            font-weight: 500;
+            color: #888;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #ffffff;
+            line-height: 1.4;
+            margin-bottom: 20px;
+        }
+
+        .skip-btn {
+            position: absolute;
+            top: 40px;
+            right: 28px;
+            background: none;
+            border: none;
+            color: #888;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .skip-btn:hover {
+            color: #ffffff;
+            transform: translateY(-1px);
+        }
+
+        .weight-input-section {
+            padding: 0 28px;
+            margin-top: 80px;
+        }
+
+        .weight-display {
+            background: linear-gradient(145deg, #2a2a2a, #1f1f1f);
+            border: 1px solid #333;
+            border-radius: 20px;
+            padding: 40px 20px;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 
+                inset 0 1px 0 rgba(255, 255, 255, 0.1),
+                0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .weight-value {
+            font-size: 48px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .weight-unit {
+            font-size: 18px;
+            color: #888;
+            font-weight: 500;
+        }
+
+        .weight-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .control-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(145deg, #333, #1a1a1a);
+            border: 1px solid #444;
+            color: #ffffff;
+            font-size: 24px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .control-btn:hover {
+            background: linear-gradient(145deg, #404040, #2a2a2a);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .control-btn:active {
+            transform: translateY(0);
+        }
+
+        .unit-selector {
+            display: flex;
+            background: #1a1a1a;
+            border-radius: 15px;
+            padding: 4px;
+            border: 1px solid #333;
+            margin-bottom: 60px;
+        }
+
+        .unit-btn {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            background: none;
+            color: #888;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .unit-btn.active {
+            background: linear-gradient(145deg, #ffffff, #f0f0f0);
+            color: #000;
+            box-shadow: 0 2px 10px rgba(255, 255, 255, 0.2);
+        }
+
+        .progress-bar {
+            position: absolute;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 4px;
+            background: #333;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            width: 40%;
+            height: 100%;
+            background: linear-gradient(90deg, #4ade80, #22c55e);
+            border-radius: 2px;
+            transition: width 0.3s ease;
+        }
+
+        .continue-btn {
+            position: absolute;
+            bottom: 40px;
+            left: 28px;
+            right: 28px;
+            background: linear-gradient(145deg, #ffffff, #f0f0f0);
+            color: #000;
+            border: none;
+            padding: 18px;
+            border-radius: 15px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(255, 255, 255, 0.2);
+        }
+
+        .continue-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(255, 255, 255, 0.3);
+        }
+
+        .background-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.03) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        @media (max-width: 375px) {
+            .container {
+                width: 100%;
+            }
+            
+            .header {
+                padding: 40px 20px 30px;
+            }
+            
+            .title {
+                font-size: 28px;
+            }
+            
+            .weight-input-section {
+                margin-top: 60px;
+            }
+            
+            .weight-display {
+                padding: 30px 15px;
+            }
+            
+            .weight-value {
+                font-size: 42px;
+            }
+            
+            .continue-btn {
+                bottom: 20px;
+                left: 20px;
+                right: 20px;
+                padding: 16px;
+            }
+            
+            .progress-bar {
+                bottom: 80px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="background-pattern"></div>
+        
+        <div class="header">
+            <div class="step-indicator">Step 2 of 5</div>
+            <h1 class="title">What's your goal weight?</h1>
+            <button class="skip-btn" onclick="skipStep()">Skip</button>
+        </div>
+
+        <div class="weight-input-section">
+            <div class="weight-display">
+                <div class="weight-value" id="weightValue">60</div>
+                <div class="weight-unit" id="weightUnit">kg</div>
+            </div>
+
+            <div class="weight-controls">
+                <button class="control-btn" onclick="decreaseWeight()">-</button>
+                <button class="control-btn" onclick="increaseWeight()">+</button>
+            </div>
+
+            <div class="unit-selector">
+                <button class="unit-btn active" onclick="switchUnit('kg')" id="kgBtn">KG</button>
+                <button class="unit-btn" onclick="switchUnit('lbs')" id="lbsBtn">LBS</button>
+            </div>
+        </div>
+
+        <div class="progress-bar">
+            <div class="progress-fill"></div>
+        </div>
+
+        <button class="continue-btn" onclick="continueToNext()">Continue</button>
+    </div>
+
+    <script>
+        let currentWeight = 60;
+        let currentUnit = 'kg';
+
+        function updateWeightDisplay() {
+            document.getElementById('weightValue').textContent = currentWeight;
+            document.getElementById('weightUnit').textContent = currentUnit;
+        }
+
+        function increaseWeight() {
+            const step = currentUnit === 'kg' ? 1 : 1;
+            const max = currentUnit === 'kg' ? 200 : 440;
+            
+            if (currentWeight < max) {
+                currentWeight += step;
+                updateWeightDisplay();
+                
+                // Add animation effect
+                const weightValue = document.getElementById('weightValue');
+                weightValue.style.transform = 'scale(1.1)';
+                setTimeout(() => {
+                    weightValue.style.transform = 'scale(1)';
+                }, 150);
+            }
+        }
+
+        function decreaseWeight() {
+            const step = currentUnit === 'kg' ? 1 : 1;
+            const min = currentUnit === 'kg' ? 30 : 66;
+            
+            if (currentWeight > min) {
+                currentWeight -= step;
+                updateWeightDisplay();
+                
+                // Add animation effect
+                const weightValue = document.getElementById('weightValue');
+                weightValue.style.transform = 'scale(0.9)';
+                setTimeout(() => {
+                    weightValue.style.transform = 'scale(1)';
+                }, 150);
+            }
+        }
+
+        function switchUnit(unit) {
+            if (unit === currentUnit) return;
+            
+            // Convert weight
+            if (unit === 'lbs' && currentUnit === 'kg') {
+                currentWeight = Math.round(currentWeight * 2.205);
+            } else if (unit === 'kg' && currentUnit === 'lbs') {
+                currentWeight = Math.round(currentWeight / 2.205);
+            }
+            
+            currentUnit = unit;
+            
+            // Update UI
+            document.getElementById('kgBtn').classList.toggle('active', unit === 'kg');
+            document.getElementById('lbsBtn').classList.toggle('active', unit === 'lbs');
+            
+            updateWeightDisplay();
+        }
+
+        function continueToNext() {
+            // Add loading animation
+            const btn = document.querySelector('.continue-btn');
+            btn.textContent = 'Loading...';
+            btn.style.opacity = '0.7';
+            
+            setTimeout(() => {
+                // Navigate to Select3.html
+                window.location.href = 'Select3.html';
+            }, 1000);
+        }
+
+        function skipStep() {
+            if (confirm('Are you sure you want to skip this step?')) {
+                alert('Step skipped');
+            }
+        }
+
+        // Initialize
+        updateWeightDisplay();
+    </script>
+</body>
+</html>

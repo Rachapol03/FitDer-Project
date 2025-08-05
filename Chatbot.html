@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FitDER Chat Bot</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #000000;
+            color: #ffffff;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 100%;
+            height: 100vh;
+            height: -webkit-fill-available;
+            margin: 0;
+            background: #000000;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            border-radius: 0;
+            box-shadow: none;
+        }
+
+
+
+        /* Header */
+        .header {
+            background: #000000;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #000000;
+            box-shadow: 0 2px 10px rgba(255, 255, 255, 0.1);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .back-btn {
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .bot-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(255, 255, 255, 0.2);
+        }
+
+        .bot-avatar::before {
+            content: '🤖';
+            font-size: 20px;
+        }
+
+        .header-info h1 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 2px;
+        }
+
+        .header-info p {
+            font-size: 12px;
+            color: #ffffff;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .action-btn {
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .action-btn:hover {
+            transform: scale(1.1);
+            color: #fff;
+        }
+
+        /* Chat Area */
+        .chat-container {
+            flex: 1;
+            padding: 16px;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            background: #000000;
+            position: relative;
+            height: calc(100vh - 130px);
+        }
+
+        .chat-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.02) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.02) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .message {
+            display: flex;
+            margin-bottom: 16px;
+            animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message.bot {
+            justify-content: flex-start;
+        }
+
+        .message.user {
+            justify-content: flex-end;
+        }
+
+        .message-bubble {
+            max-width: 85%;
+            padding: 10px 14px;
+            border-radius: 18px;
+            font-size: 14px;
+            line-height: 1.4;
+            position: relative;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            word-wrap: break-word;
+            -webkit-hyphens: auto;
+            hyphens: auto;
+        }
+
+        .message.bot .message-bubble {
+            background: #000000;
+            color: #ffffff;
+            border-bottom-left-radius: 6px;
+            box-shadow: 0 2px 6px rgba(255, 255, 255, 0.1);
+            border: 1px solid #000000;
+        }
+
+        .message.user .message-bubble {
+            background: #ffffff;
+            color: #000000;
+            border-bottom-right-radius: 6px;
+            box-shadow: 0 2px 6px rgba(255, 255, 255, 0.2);
+            border: none;
+        }
+
+        .message-bubble:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 255, 255, 0.15);
+        }
+
+        .typing-indicator {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 12px 16px;
+            background: #ffffff;
+            border-radius: 18px;
+            border-bottom-left-radius: 6px;
+            max-width: 70%;
+            margin-bottom: 16px;
+        }
+
+        .typing-dot {
+            width: 6px;
+            height: 6px;
+            background: #666;
+            border-radius: 50%;
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing {
+            0%, 60%, 100% {
+                transform: translateY(0);
+            }
+            30% {
+                transform: translateY(-10px);
+            }
+        }
+
+        /* Input Area */
+        .input-container {
+            padding: 8px 12px;
+            padding-bottom: max(12px, env(safe-area-inset-bottom));
+            background: #000000;
+            border-top: 1px solid #000000;
+            backdrop-filter: blur(20px);
+            position: sticky;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+        }
+
+        .input-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #000000;
+            border-radius: 20px;
+            padding: 8px 12px;
+            border: 1px solid #000000;
+            transition: all 0.3s ease;
+            margin: 0 auto;
+            max-width: 100%;
+        }
+
+        .input-wrapper:focus-within {
+            border-color: #666;
+            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
+        }
+
+        .message-input {
+            flex: 1;
+            background: none;
+            border: none;
+            outline: none;
+            color: #ffffff;
+            font-size: 16px;
+            font-family: inherit;
+            min-width: 0;
+            padding: 4px 0;
+            line-height: 20px;
+        }
+
+        .message-input::placeholder {
+            color: #ffffff;
+        }
+
+        .input-actions {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            margin-left: 4px;
+        }
+
+        .attachment-btn, .send-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+
+        .attachment-btn {
+            background: #000000;
+            color: #ffffff;
+            padding: 8px;
+            border: 1px solid #ffffff;
+        }
+
+        .attachment-btn:active {
+            background: #000000;
+            transform: scale(0.95);
+        }
+
+        .send-btn {
+            background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%);
+            color: #000000;
+        }
+
+        .send-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(255, 255, 255, 0.3);
+        }
+
+        .send-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 8px 0;
+            padding-bottom: env(safe-area-inset-bottom, 8px);
+            background: #000000;
+            border-top: 1px solid #000000;
+            position: sticky;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+        }
+
+        .nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-item:hover {
+            transform: translateY(-2px);
+        }
+
+        .nav-icon {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .nav-item.active .nav-icon {
+            transform: scale(1.2);
+        }
+
+        .nav-label {
+            font-size: 10px;
+            color: #ffffff;
+        }
+
+        .nav-item.active .nav-label {
+            color: #ffffff;
+        }
+
+        /* Smooth scrolling */
+        .chat-container {
+            scroll-behavior: smooth;
+        }
+
+        /* Custom scrollbar */
+        .chat-container::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .chat-container::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .chat-container::-webkit-scrollbar-thumb {
+            background: #000000;
+            border-radius: 2px;
+            border: 1px solid #ffffff;
+        }
+
+        .chat-container::-webkit-scrollbar-thumb:hover {
+            background: #000000;
+            border: 1px solid #ffffff;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+
+
+        <!-- Header -->
+        <div class="header">
+            <div class="header-left">
+                <div class="back-btn">←</div>
+                <div class="bot-avatar"></div>
+                <div class="header-info">
+                    <h1>FitDER Chat Bot</h1>
+                    <p>ออนไลน์</p>
+                </div>
+            </div>
+            <div class="header-actions">
+                <div class="action-btn">📞</div>
+                <div class="action-btn">⋮</div>
+            </div>
+        </div>
+
+        <!-- Chat Container -->
+        <div class="chat-container" id="chatContainer">
+            <div class="message bot">
+                <div class="message-bubble">
+                    สวัสดีครับ! ยินดีต้อนรับสู่ FitDER Chat Bot 🏋️‍♂️
+                    <br>ผมพร้อมช่วยเหลือเรื่องการออกกำลังกายและสุขภาพของคุณ
+                </div>
+            </div>
+            <div class="message user">
+                <div class="message-bubble">
+                    สวัสดีครับ อยากปรึกษาเรื่องการออกกำลังกาย
+                </div>
+            </div>
+            <div class="message bot">
+                <div class="message-bubble">
+                    ยอดเยี่ยมเลยครับ! อยากทราบว่าคุณมีเป้าหมายในการออกกำลังกายแบบไหนบ้างคะ?
+                    <br><br>• ลดน้ำหนัก<br>• เพิ่มกล้ามเนื้อ<br>• เพิ่มความแข็งแรง<br>• รักษาสุขภาพทั่วไป
+                </div>
+            </div>
+            <div class="typing-indicator" id="typingIndicator" style="display: none;">
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+            </div>
+        </div>
+
+        <!-- Input Area -->
+        <div class="input-container">
+            <div class="input-wrapper">
+                <input type="text" class="message-input" placeholder="พิมพ์ข้อความ..." id="messageInput">
+                <div class="input-actions">
+                    <button class="attachment-btn">📎</button>
+                    <button class="send-btn" id="sendBtn">➤</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Navigation -->
+        <div class="bottom-nav">
+            <a href="Main.html" class="nav-item" style="text-decoration: none; color: inherit;">
+                <div class="nav-icon">🏠</div>
+                <div class="nav-label">Home</div>
+            </a>
+            <a href="Chatbot.html" class="nav-item" style="text-decoration: none; color: inherit;">
+                <div class="nav-icon">🤖</div>
+                <div class="nav-label">Chatbot</div>
+            </a>
+            <a href="PoseSelect.html" class="nav-item" style="text-decoration: none; color: inherit;">
+                <div class="nav-icon">💪</div>
+                <div class="nav-label">Workout</div>
+            </a>
+            <a href="Notification.html" class="nav-item" style="text-decoration: none; color: inherit;">
+                <div class="nav-icon">🔔</div>
+                <div class="nav-label">Notification</div>
+            </a>
+            <a href="Profile.html" class="nav-item" style="text-decoration: none; color: inherit;">
+                <div class="nav-icon">👤</div>
+                <div class="nav-label">Profile</div>
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // Chat functionality
+        const messageInput = document.getElementById('messageInput');
+        const sendBtn = document.getElementById('sendBtn');
+        const chatContainer = document.getElementById('chatContainer');
+        const typingIndicator = document.getElementById('typingIndicator');
+
+        // Sample bot responses
+        const botResponses = [
+            "ครับ ผมเข้าใจแล้ว มีคำถามอื่นอีกไหมครับ?",
+            "นั่นเป็นความคิดที่ดีมากเลยครับ! ลองทำดูนะครับ 💪",
+            "ผมแนะนำให้เริ่มจากพื้นฐานก่อนนะครับ ค่อยๆ เพิ่มความหนักทีละน้อย",
+            "อย่าลืมดื่มน้ำให้เพียงพอและพักผ่อนให้เต็มที่ด้วยนะครับ 💧",
+            "ดีมากครับ! คุณทำได้แล้ว อย่าลืมสม่ำเสมอด้วยนะ 🎯"
+        ];
+
+        function addMessage(text, isUser = false) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isUser ? 'user' : 'bot'}`;
+            
+            const bubbleDiv = document.createElement('div');
+            bubbleDiv.className = 'message-bubble';
+            bubbleDiv.textContent = text;
+            
+            messageDiv.appendChild(bubbleDiv);
+            
+            // Insert before typing indicator if it exists
+            const typingIndicator = document.getElementById('typingIndicator');
+            chatContainer.insertBefore(messageDiv, typingIndicator);
+            
+            // Scroll to bottom
+            setTimeout(() => {
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            }, 100);
+        }
+
+        function showTypingIndicator() {
+            typingIndicator.style.display = 'flex';
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        function hideTypingIndicator() {
+            typingIndicator.style.display = 'none';
+        }
+
+        function sendMessage() {
+            const text = messageInput.value.trim();
+            if (!text) return;
+
+            // Add user message
+            addMessage(text, true);
+            messageInput.value = '';
+
+            // Show typing indicator
+            showTypingIndicator();
+
+            // Simulate bot response
+            setTimeout(() => {
+                hideTypingIndicator();
+                const randomResponse = botResponses[Math.floor(Math.random() * botResponses.length)];
+                addMessage(randomResponse);
+            }, 1000 + Math.random() * 2000);
+        }
+
+        // Event listeners
+        sendBtn.addEventListener('click', sendMessage);
+        messageInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        // Navigation functionality
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', () => {
+                document.querySelector('.nav-item.active').classList.remove('active');
+                item.classList.add('active');
+            });
+        });
+
+        // Auto-focus input
+        messageInput.focus();
+    </script>
+</body>
+</html>

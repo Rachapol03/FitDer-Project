@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitTracker - Modern Fitness App</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
+            color: white;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 375px;
+            margin: 0 auto;
+            background: #000;
+            min-height: 100vh;
+            position: relative;
+            padding-bottom: 80px;
+            overflow-y: auto;
+        }
+
+
+
+        /* Top Navigation Tabs */
+        .top-nav-tabs {
+            display: flex;
+            padding: 12px 10px;
+            gap: 8px;
+            justify-content: space-between;
+            background: rgba(255,255,255,0.02);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .top-nav-tab {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 8px 10px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            font-weight: 500;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: rgba(255,255,255,0.7);
+            min-width: 0;
+        }
+
+        .top-nav-tab.active {
+            background: #fff;
+            color: #000;
+            border-color: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255,255,255,0.2);
+        }
+
+        .tab-icon {
+            width: 12px;
+            height: 12px;
+            background: rgba(255,255,255,0.6);
+            border-radius: 2px;
+        }
+
+        .top-nav-tab.active .tab-icon {
+            background: #000;
+        }
+
+        /* Navigation Tabs */
+        .nav-tabs {
+            display: flex;
+            padding: 20px;
+            gap: 12px;
+            background: rgba(255,255,255,0.02);
+        }
+
+        .nav-tab {
+            flex: 1;
+            padding: 12px 16px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 25px;
+            text-align: center;
+            font-weight: 500;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+        }
+
+        .nav-tab.active {
+            background: #fff;
+            color: #000;
+            border-color: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255,255,255,0.2);
+        }
+
+        /* Activity Section */
+        .activity-section {
+            padding: 20px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #fff;
+        }
+
+        /* Calendar */
+        .calendar {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 30px;
+        }
+
+        .calendar-day {
+            flex: 1;
+            padding: 12px 8px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            text-align: center;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .calendar-day.active {
+            background: #fff;
+            color: #000;
+            border-color: #fff;
+            transform: scale(1.05);
+        }
+
+        /* Progress Card */
+        .progress-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 25px;
+            backdrop-filter: blur(20px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #fff 0%, rgba(255,255,255,0.5) 100%);
+        }
+
+        .progress-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .progress-circle {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 20px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .circle-bg {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 8px solid rgba(255,255,255,0.1);
+            border-radius: 50%;
+        }
+
+        .circle-progress {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 8px solid transparent;
+            border-top: 8px solid #fff;
+            border-right: 8px solid #fff;
+            border-radius: 50%;
+            transform: rotate(-90deg);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .circle-text {
+            font-size: 24px;
+            font-weight: 700;
+            z-index: 1;
+        }
+
+        /* Workout Cards */
+        .workout-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .workout-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 20px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .workout-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%);
+            transform: rotate(-45deg);
+            transition: all 0.6s ease;
+            opacity: 0;
+        }
+
+        .workout-card:hover::before {
+            animation: shimmer 1.5s ease-in-out;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(-45deg); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: translateX(100%) translateY(100%) rotate(-45deg); opacity: 0; }
+        }
+
+        .workout-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 15px 40px rgba(255,255,255,0.1);
+            border-color: rgba(255,255,255,0.3);
+        }
+
+        .workout-icon {
+            width: 48px;
+            height: 48px;
+            margin: 0 auto 15px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .workout-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .workout-subtitle {
+            font-size: 12px;
+            color: rgba(255,255,255,0.7);
+            margin-bottom: 15px;
+        }
+
+        .see-stat-btn {
+            background: #fff;
+            color: #000;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .see-stat-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(255,255,255,0.3);
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 375px;
+            background: rgb(0,0,0);
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.8);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255,255,255,0.15);
+            padding: 8px 0 15px;
+            z-index: 1000;
+        }
+
+        .nav-items {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: rgba(255,255,255,0.6);
+        }
+
+        .nav-item:hover {
+            transform: translateY(-3px);
+            color: white;
+        }
+
+        .nav-icon {
+            width: 20px;
+            height: 20px;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .nav-item.active {
+            color: #fff;
+        }
+
+        .nav-item.active .nav-icon {
+            opacity: 1;
+        }
+
+        .nav-label {
+            font-size: 10px;
+            font-weight: 500;
+        }
+
+
+
+        /* Responsive Design */
+        @media (max-width: 375px) {
+            .container {
+                max-width: 100%;
+                min-height: 100vh;
+                padding: 0;
+            }
+            
+            .status-bar {
+                padding: 0 15px;
+            }
+            
+            .top-nav-tabs {
+                padding: 12px 15px;
+            }
+            
+            .nav-tabs {
+                padding: 12px 15px;
+            }
+            
+            .activity-section {
+                padding: 15px;
+            }
+            
+            .section-title {
+                font-size: 18px;
+                margin-bottom: 15px;
+            }
+            
+            .calendar {
+                gap: 6px;
+                margin-bottom: 20px;
+            }
+            
+            .calendar-day {
+                padding: 8px 4px;
+            }
+            
+            .progress-card {
+                padding: 20px 15px;
+                margin-bottom: 20px;
+            }
+            
+            .workout-grid {
+                gap: 10px;
+            }
+            
+            .workout-card {
+                padding: 15px;
+            }
+            
+            .workout-icon {
+                width: 40px;
+                height: 40px;
+                font-size: 20px;
+                margin-bottom: 10px;
+            }
+            
+            .workout-title {
+                font-size: 14px;
+            }
+            
+            .bottom-nav {
+                width: 100%;
+                padding: 8px 0 20px;
+            }
+            
+            .fab {
+                bottom: 85px;
+                right: 15px;
+                width: 50px;
+                height: 50px;
+            }
+            
+            .see-stat-btn {
+                padding: 6px 12px;
+                font-size: 11px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+
+        <!-- Navigation Tabs -->
+        <div class="nav-tabs">
+            <a href="Main.html" class="nav-tab">📊 Main</a>
+            <div class="nav-tab active">📈 Summary</div>
+            <a href="GuideWorkout.html" class="nav-tab">📖 Guide</a>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="nav-tabs">
+            <div class="nav-tab active">Workout</div>
+            <a href="SummaryFood.html" class="nav-tab">Food</a>
+            <a href="SummaryHealth.html" class="nav-tab">Health</a>
+        </div>
+
+        <!-- Activity Section -->
+        <div class="activity-section">
+            <h2 class="section-title">Activity</h2>
+            
+            <!-- Calendar -->
+            <div class="calendar">
+                <div class="calendar-day">
+                    <div>31</div>
+                    <div>Sun</div>
+                </div>
+                <div class="calendar-day">
+                    <div>1</div>
+                    <div>Mon</div>
+                </div>
+                <div class="calendar-day">
+                    <div>2</div>
+                    <div>Tue</div>
+                </div>
+                <div class="calendar-day">
+                    <div>3</div>
+                    <div>Wed</div>
+                </div>
+                <div class="calendar-day">
+                    <div>4</div>
+                    <div>Thu</div>
+                </div>
+                <div class="calendar-day active">
+                    <div>5</div>
+                    <div>Fri</div>
+                </div>
+            </div>
+
+            <!-- Today Progress -->
+            <div class="progress-card">
+                <div class="progress-title">Today's Progress</div>
+                <div class="progress-circle">
+                    <div class="circle-bg"></div>
+                    <div class="circle-progress"></div>
+                    <div class="circle-text">75%</div>
+                </div>
+            </div>
+
+            <!-- Workout Grid -->
+            <div class="workout-grid">
+                <div class="workout-card">
+                    <div class="workout-icon">💪</div>
+                    <div class="workout-title">Sit UP</div>
+                    <div class="workout-subtitle">Workout</div>
+                    <button class="see-stat-btn">See Stat</button>
+                </div>
+                
+                <div class="workout-card">
+                    <div class="workout-icon">🏃</div>
+                    <div class="workout-title">Pull UP</div>
+                    <div class="workout-subtitle">Workout</div>
+                    <button class="see-stat-btn">See Stat</button>
+                </div>
+                
+                <div class="workout-card">
+                    <div class="workout-icon">🏋️</div>
+                    <div class="workout-title">Plank</div>
+                    <div class="workout-subtitle">Workout</div>
+                    <button class="see-stat-btn">See Stat</button>
+                </div>
+                
+                <div class="workout-card">
+                    <div class="workout-icon">🎯</div>
+                    <div class="workout-title">Cardio</div>
+                    <div class="workout-subtitle">Workout</div>
+                    <button class="see-stat-btn">See Stat</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Navigation -->
+        <div class="bottom-nav">
+            <div class="nav-items">
+                <a href="Main.html" class="nav-item">
+                    <div class="nav-icon">🏠</div>
+                    <div class="nav-label">Home</div>
+                </a>
+                <a href="Chatbot.html" class="nav-item">
+                    <div class="nav-icon">🤖</div>
+                    <div class="nav-label">Chatbot</div>
+                </a>
+                <a href="PoseSelect.html" class="nav-item">
+                    <div class="nav-icon">💪</div>
+                    <div class="nav-label">Workout</div>
+                </a>
+                <a href="Notification.html" class="nav-item">
+                    <div class="nav-icon">🔔</div>
+                    <div class="nav-label">Notification</div>
+                </a>
+                <a href="Profile.html" class="nav-item">
+                    <div class="nav-icon">👤</div>
+                    <div class="nav-label">Profile</div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Add interactivity for top navigation tabs
+        document.querySelectorAll('.top-nav-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.top-nav-tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // Add interactivity
+        document.querySelectorAll('.nav-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        document.querySelectorAll('.calendar-day').forEach(day => {
+            day.addEventListener('click', function() {
+                document.querySelectorAll('.calendar-day').forEach(d => d.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // Animate progress circle on load
+        window.addEventListener('load', function() {
+            const progressCircle = document.querySelector('.circle-progress');
+            progressCircle.style.animation = 'none';
+            setTimeout(() => {
+                progressCircle.style.animation = 'pulse 2s ease-in-out infinite';
+            }, 500);
+        });
+
+        // Add click effects to workout cards
+        document.querySelectorAll('.workout-card').forEach(card => {
+            card.addEventListener('click', function() {
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 150);
+            });
+        });
+
+        // Simulate battery level changes
+        function updateBattery() {
+            const battery = document.querySelector('.battery-fill');
+            const levels = ['30%', '50%', '70%', '90%'];
+            const randomLevel = levels[Math.floor(Math.random() * levels.length)];
+            battery.style.width = randomLevel;
+        }
+        
+        // Update battery level every 30 seconds for demo
+        setInterval(updateBattery, 30000);
+    </script>
+</body>
+</html>
