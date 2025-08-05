@@ -1,108 +1,437 @@
-import cv2
-import mediapipe as mp
-import numpy as np
-from flask import Flask, render_template
-from flask_socketio import SocketIO, emit
-import base64
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Workout Detection</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* CSS จากโค้ดเดิม, ปรับปรุงเพื่อแสดงผลที่เหมาะสม */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
 
-app = Flask(__name__)
-socketio = SocketIO(app, cors_allowed_origins="*")
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #000000;
+            color: #ffffff;
+            overflow: hidden;
+            position: fixed;
+            width: 100%;
+            height: 100%;
+        }
 
-# เตรียม mediapipe
-mp_pose = mp.solutions.pose
-mp_drawing = mp.solutions.drawing_utils
+        .mobile-container {
+            width: 100%;
+            height: 100vh;
+            height: -webkit-fill-available;
+            margin: 0;
+            background: #000000;
+            position: relative;
+            box-shadow: none;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
 
-# ตัวแปรสำหรับนับจำนวนครั้งและสถานะ
-counter = 0
-stage = None
+        .bg-decoration {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            opacity: 0.03;
+            background-image:
+                radial-gradient(circle at 20% 80%, white 1px, transparent 1px),
+                radial-gradient(circle at 80% 20%, white 1px, transparent 1px),
+                radial-gradient(circle at 40% 40%, white 1px, transparent 1px);
+            background-size: 50px 50px, 80px 80px, 60px 60px;
+            pointer-events: none;
+        }
 
-# ฟังก์ชันคำนวณองศาระหว่างจุด 3 จุด
-def calculate_angle(a, b, c):
-    a = np.array(a)
-    b = np.array(b)
-    c = np.array(c)
-    radians = np.arctan2(c[1] - b[1], c[0] - b[0]) - np.arctan2(a[1] - b[1], a[0] - b[0])
-    angle = np.abs(radians * 180.0 / np.pi)
-    if angle > 180.0:
-        angle = 360 - angle
-    return angle
+        .header {
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 0 16px;
+        }
 
-def process_frame_for_lateral_raise(frame):
-    global counter, stage
+        .header-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #ffffff;
+            text-align: center;
+            flex-grow: 1;
+        }
+        
+        .header-back {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #ffffff;
+            font-size: 24px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .main-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 16px;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .camera-container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            background: #111;
+            border-radius: 16px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        #cameraFeed, #overlayCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transform: scaleX(-1);
+        }
+        
+        #overlayCanvas {
+            z-index: 10;
+        }
+
+        .camera-placeholder {
+            font-size: 20px;
+            color: rgba(255, 255, 255, 0.5);
+            text-align: center;
+            padding: 20px;
+        }
+
+        .overlay-data {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.7), transparent);
+            padding: 10px 16px;
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .data-item {
+            flex: 1;
+            padding: 8px 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            min-width: 0;
+        }
+        
+        .data-label {
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.6);
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .data-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: #ffffff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .data-value.good {
+            color: #22c55e; /* Green */
+        }
+        .data-value.bad {
+            color: #ef4444; /* Red */
+        }
+        .data-value.normal {
+            color: #f59e0b; /* Yellow/Orange */
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            width: 100%;
+            background: #000000;
+            backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 12px 20px;
+            padding-bottom: calc(12px + env(safe-area-inset-bottom, 0));
+            z-index: 100;
+        }
+        
+        .nav-items {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            gap: 8px;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            color: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            flex: 1;
+        }
+
+        .nav-item.active {
+            color: #ffffff;
+        }
+
+        .nav-item:hover {
+            color: #ffffff;
+            transform: translateY(-2px);
+        }
+
+        .nav-icon {
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0.7;
+        }
+
+        .nav-item.active .nav-icon {
+            opacity: 1;
+        }
+
+        .nav-label {
+            font-size: 10px;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="mobile-container">
+        <div class="bg-decoration"></div>
+
+        <div class="header">
+            <a href="PoseSelect.html" class="header-back"><i class="fas fa-chevron-left"></i></a>
+            <h1 class="header-title" id="exerciseTitle">Dumbbell Lateral Raise</h1>
+        </div>
+
+        <div class="main-content">
+            <div class="camera-container">
+                <video id="cameraFeed" autoplay playsinline></video>
+                <canvas id="overlayCanvas"></canvas>
+                <div class="camera-placeholder" id="cameraPlaceholder">กำลังเข้าถึงกล้อง...</div>
+            </div>
+
+            <div class="overlay-data">
+                <div class="data-item">
+                    <div class="data-label">จำนวนครั้ง</div>
+                    <div class="data-value" id="repCount">0</div>
+                </div>
+                <div class="data-item">
+                    <div class="data-label">ฟอร์ม</div>
+                    <div class="data-value" id="formStatus">กำลังรอ</div>
+                </div>
+                <div class="data-item">
+                    <div class="data-label">สถานะ</div>
+                    <div class="data-value" id="poseState">กำลังรอ</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bottom-nav">
+            <div class="nav-items">
+                <a href="Main.html" class="nav-item">
+                    <div class="nav-icon">🏠</div>
+                    <div class="nav-label">Home</div>
+                </a>
+                <a href="Chatbot.html" class="nav-item">
+                    <div class="nav-icon">🤖</div>
+                    <div class="nav-label">Chatbot</div>
+                </a>
+                <a href="PoseSelect.html" class="nav-item active">
+                    <div class="nav-icon">💪</div>
+                    <div class="nav-label">Workout</div>
+                </a>
+                <a href="Notification.html" class="nav-item">
+                    <div class="nav-icon">🔔</div>
+                    <div class="nav-label">Notification</div>
+                </a>
+                <a href="Profile.html" class="nav-item">
+                    <div class="nav-icon">👤</div>
+                    <div class="nav-label">Profile</div>
+                </a>
+            </div>
+        </div>
+    </div>
     
-    # พลิกภาพให้เหมือนมองกระจก
-    frame = cv2.flip(frame, 1)
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const exerciseTitle = document.getElementById('exerciseTitle');
+            const repCount = document.getElementById('repCount');
+            const formStatus = document.getElementById('formStatus');
+            const poseState = document.getElementById('poseState');
+            const cameraVideo = document.getElementById('cameraFeed');
+            const cameraPlaceholder = document.getElementById('cameraPlaceholder');
+            const overlayCanvas = document.getElementById('overlayCanvas');
+            const ctx = overlayCanvas.getContext('2d');
 
-    # ประมวลผลภาพด้วย MediaPipe
-    image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-    results = mp_pose.Pose(min_detection_confidence=0.7, min_tracking_confidence=0.7).process(image)
-    
-    landmarks_data = []
-    connections_data = []
-    feedback = "กำลังรอ"
+            const urlParams = new URLSearchParams(window.location.search);
+            const exerciseName = urlParams.get('exercise');
+            exerciseTitle.textContent = exerciseName || 'Dumbbell Lateral Raise';
+            
+            const socket = io.connect('http://' + document.domain + ':' + location.port);
 
-    if results.pose_landmarks:
-        # ดึงจุด Landmark ที่สำคัญ
-        landmarks = results.pose_landmarks.landmark
-        
-        shoulder = [landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value].x,
-                    landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value].y]
-        elbow = [landmarks[mp_pose.PoseLandmark.RIGHT_ELBOW.value].x,
-                 landmarks[mp_pose.PoseLandmark.RIGHT_ELBOW.value].y]
-        wrist = [landmarks[mp_pose.PoseLandmark.RIGHT_WRIST.value].x,
-                 landmarks[mp_pose.PoseLandmark.RIGHT_WRIST.value].y]
-        
-        # คำนวณองศา
-        angle = calculate_angle(shoulder, elbow, wrist)
-        
-        # ตรรกะการนับ Dumbbell Lateral Raise
-        if 70 < angle < 110:
-            feedback = "ถูกต้อง"
-            stage = "ขึ้น"
-        elif angle < 30:
-            if stage == "ขึ้น":
-                stage = "ลง"
-                counter += 1
+            let streaming = false;
+
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(function(stream) {
+                    cameraVideo.srcObject = stream;
+                    cameraVideo.play();
+                    cameraPlaceholder.style.display = 'none';
+                    
+                    cameraVideo.addEventListener('loadeddata', () => {
+                        // อัปเดตขนาด canvas ให้ตรงกับขนาดวิดีโอ
+                        const videoRatio = cameraVideo.videoWidth / cameraVideo.videoHeight;
+                        const containerWidth = cameraVideo.offsetWidth;
+                        const containerHeight = cameraVideo.offsetHeight;
+                        
+                        let finalWidth = containerWidth;
+                        let finalHeight = containerWidth / videoRatio;
+                        
+                        if (finalHeight > containerHeight) {
+                            finalHeight = containerHeight;
+                            finalWidth = containerHeight * videoRatio;
+                        }
+                        
+                        overlayCanvas.width = finalWidth;
+                        overlayCanvas.height = finalHeight;
+                        
+                        streaming = true;
+                        sendFrameToServer();
+                    }, { once: true });
+                })
+                .catch(function(err) {
+                    console.log("An error occurred: " + err);
+                    cameraPlaceholder.textContent = 'ไม่สามารถเข้าถึงกล้องได้: ' + err.name;
+                });
                 
-        # สร้างข้อมูลสำหรับวาดจุดและเส้นบน Canvas
-        for landmark in landmarks:
-            landmarks_data.append({
-                'x': landmark.x,
-                'y': landmark.y,
-                'z': landmark.z,
-                'visibility': landmark.visibility
-            })
+            // ฟังก์ชันสำหรับส่งภาพไปยังเซิร์ฟเวอร์
+            function sendFrameToServer() {
+                if (!streaming) return;
 
-        for connection in mp_pose.POSE_CONNECTIONS:
-            connections_data.append(connection)
+                const tempCanvas = document.createElement('canvas');
+                const tempCtx = tempCanvas.getContext('2d');
+                tempCanvas.width = cameraVideo.videoWidth;
+                tempCanvas.height = cameraVideo.videoHeight;
+                tempCtx.drawImage(cameraVideo, 0, 0, tempCanvas.width, tempCanvas.height);
+                
+                tempCanvas.toBlob(function(blob) {
+                    if (blob) {
+                        const reader = new FileReader();
+                        reader.readAsDataURL(blob); 
+                        reader.onloadend = function() {
+                            const base64data = reader.result;
+                            socket.emit('frame', { image: base64data, exercise_name: exerciseName });
+                        }
+                    }
+                }, 'image/jpeg', 0.5);
 
-    # ส่งข้อมูลกลับไปที่ Frontend
-    return {
-        'rep_count': counter,
-        'form_status': feedback,
-        'pose_state': stage if stage else "กำลังรอ",
-        'landmarks': landmarks_data,
-        'connections': connections_data
-    }
+                requestAnimationFrame(sendFrameToServer);
+            }
 
-@app.route('/')
-def index():
-    # หน้าหลักที่จะแสดงผล HTML
-    return render_template('index.html')
+            // รับข้อมูลการนับครั้งและฟอร์มจากเซิร์ฟเวอร์
+            socket.on('workout_data', function(data) {
+                repCount.textContent = data.rep_count;
+                formStatus.textContent = data.form_status;
+                poseState.textContent = data.pose_state;
+                
+                if (data.form_status === 'ดี') {
+                    formStatus.className = 'data-value good';
+                } else if (data.form_status === 'ผิด' || data.form_status === 'ยกสูงเกินไป' || data.form_status === 'ต่ำเกินไป') {
+                    formStatus.className = 'data-value bad';
+                } else {
+                    formStatus.className = 'data-value normal';
+                }
+            });
+            
+            // รับจุด keypoints จาก Python และวาดลงบน Canvas
+            socket.on('pose_landmarks', function(data) {
+                const landmarks = data.landmarks;
+                const connections = data.connections;
+                if (!landmarks || landmarks.length === 0) {
+                    ctx.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height);
+                    return;
+                }
 
-@socketio.on('frame')
-def handle_frame(data):
-    image_data = data['image'].split(',')[1]
-    image_bytes = base64.b64decode(image_data)
-    nparr = np.frombuffer(image_bytes, np.uint8)
-    frame = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+                // เริ่มวาด
+                ctx.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height);
 
-    # ประมวลผลเฟรมด้วยโค้ดของคุณ
-    processed_data = process_frame_for_lateral_raise(frame)
-    
-    # ส่งข้อมูลที่ประมวลผลแล้วกลับไป
-    socketio.emit('workout_data', processed_data)
-    socketio.emit('pose_landmarks', processed_data)
+                // วาดเส้นเชื่อมต่อ
+                if (connections && connections.length > 0) {
+                    ctx.strokeStyle = '#00ff00'; // Green
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    connections.forEach(pair => {
+                        const start = landmarks[pair[0]];
+                        const end = landmarks[pair[1]];
+                        if (start && end) {
+                            ctx.moveTo(start.x * overlayCanvas.width, start.y * overlayCanvas.height);
+                            ctx.lineTo(end.x * overlayCanvas.width, end.y * overlayCanvas.height);
+                        }
+                    });
+                    ctx.stroke();
+                }
 
-if __name__ == '__main__':
-    socketio.run(app, debug=True)
+                // วาดจุด keypoints
+                landmarks.forEach(point => {
+                    ctx.beginPath();
+                    ctx.arc(point.x * overlayCanvas.width, point.y * overlayCanvas.height, 5, 0, 2 * Math.PI);
+                    ctx.fillStyle = 'red';
+                    ctx.fill();
+                });
+            });
+        });
+    </script>
+</body>
+</html>
