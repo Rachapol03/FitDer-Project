@@ -18,23 +18,46 @@
             color: white;
             overflow-x: hidden;
             min-height: 100vh;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        body::-webkit-scrollbar {
+            display: none;
+        }
+
+        html {
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        html::-webkit-scrollbar {
+            display: none;
         }
 
         .container {
-            width: 100vw;
+            width: 100%;
             max-width: 100%;
             margin: 0 auto;
-            background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
+            background: #000;
             min-height: 100vh;
             position: relative;
+            padding-bottom: 80px;
+            overflow-y: scroll;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            overflow-x: hidden;
+        }
+        
+        .container::-webkit-scrollbar {
+            display: none;
         }
 
         /* Header */
         .header {
-            padding: 20px 16px 16px;
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            background: linear-gradient(135deg, #1a1a1a 0%, #000000 100%);
         }
 
         .header-top {
@@ -100,7 +123,7 @@
         }
 
         .category-text {
-            font-size: 12px;
+            font-size: 20px;
             color: rgba(255, 255, 255, 0.8);
             text-align: center;
         }
@@ -117,97 +140,80 @@
             color: white;
         }
 
-        /* Filter Tabs */
-        .filter-tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            padding: 0 12px;
-            overflow-x: hidden;
-            justify-content: space-between;
-            width: 100%;
-        }
-
-        .filter-tab {
-            padding: 16px 0;
-            border-radius: 20px;
-            font-size: 16px;
-            font-weight: 600;
-            border: none;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            white-space: nowrap;
-            text-align: center;
-            flex: 1;
-            max-width: none;
-            width: 33.33%;
-            background: rgba(255, 255, 255, 0.05);
-            color: #888888;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            min-height: 56px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .filter-tab.active {
-            background: #ffffff;
-            color: #000000;
-            box-shadow: 0 4px 20px rgba(255, 255, 255, 0.2);
-        }
-
-        .filter-tab:hover {
-            background: rgba(255, 255, 255, 0.1);
-            color: #ffffff;
-        }
-
-        /* Navigation Tabs */
+        /* Navigation Tabs in Header */
         .nav-tabs {
             display: flex;
-            gap: 12px;
-            margin-bottom: 24px;
-            justify-content: center;
-            padding: 0 12px;
-            width: 100%;
+            gap: 8px;
+            margin-bottom: 20px;
         }
 
         .nav-tab {
-            padding: 16px 24px;
-            border-radius: 20px;
-            font-size: 18px;
-            font-weight: 600;
-            border: none;
+            flex: 1;
+            padding: 8px 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.7);
             cursor: pointer;
             transition: all 0.3s ease;
-            background: rgba(255, 255, 255, 0.05);
-            color: #888888;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            flex: 1;
+            text-decoration: none;
             text-align: center;
-            max-width: 140px;
-            min-height: 80px;
+            white-space: nowrap;
+            min-width: 0;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
+            gap: 4px;
         }
 
         .nav-tab.active {
             background: #ffffff;
             color: #000000;
-            box-shadow: 0 4px 20px rgba(255, 255, 255, 0.3);
+            border-color: #ffffff;
         }
 
         .nav-tab:hover {
             background: rgba(255, 255, 255, 0.1);
-            color: #ffffff;
         }
 
-        .nav-icon {
-            width: 16px;
-            height: 16px;
-            background: currentColor;
-            border-radius: 4px;
+        /* Secondary Navigation */
+        .filter-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .filter-tab {
+            flex: 1;
+            padding: 8px 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.7);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            text-align: center;
+            white-space: nowrap;
+            min-width: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+        }
+
+        .filter-tab.active {
+            background: #ffffff;
+            color: #000000;
+            border-color: #ffffff;
+        }
+
+        .filter-tab:hover {
+            background: rgba(255, 255, 255, 0.1);
         }
 
         /* Community Posts */
@@ -467,17 +473,17 @@
             }
             
             .nav-tab {
-                padding: 6px 12px;
-                font-size: 13px;
+                padding: 6px 8px;
+                font-size: 12px;
             }
             
             .filter-tabs {
-                gap: 8px;
+                gap: 6px;
             }
             
             .filter-tab {
-                padding: 6px 12px;
-                font-size: 13px;
+                padding: 6px 8px;
+                font-size: 12px;
             }
             
             .post-card {
@@ -500,28 +506,28 @@
             }
             
             .nav-tab {
-                padding: 5px 10px;
-                font-size: 12px;
+                padding: 5px 8px;
+                font-size: 11px;
             }
             
             .filter-tabs {
-                gap: 6px;
+                gap: 4px;
             }
             
             .filter-tab {
-                padding: 5px 10px;
-                font-size: 12px;
+                padding: 5px 8px;
+                font-size: 11px;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Main Content -->
-        <div class="main-content">
+        <!-- Header -->
+        <div class="header">
             <!-- Navigation Tabs -->
             <div class="nav-tabs">
-                <a href="Main.html" class="nav-tab" style="text-decoration: none;">📊<br>Main</a>
+                <a href="Main.html" class="nav-tab" style="text-decoration: none;">📊 Main</a>
                 <a href="SummaryWorkout.html" class="nav-tab" style="text-decoration: none;">📈 Summary</a>
                 <a href="GuideWorkout.html" class="nav-tab active" style="text-decoration: none;">📖 Guide</a>
             </div>
@@ -532,6 +538,10 @@
                 <a href="GuideNutrition.html" class="filter-tab" style="text-decoration: none;">Nutrition</a>
                 <div class="filter-tab active">Community</div>
             </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
 
             <!-- Section Title -->
             <h2 class="section-title">Recommended</h2>
