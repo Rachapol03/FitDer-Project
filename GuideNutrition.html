@@ -12,59 +12,92 @@
             box-sizing: border-box;
         }
 
+        html {
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            overflow: hidden;
+        }
+
+        html::-webkit-scrollbar {
+            display: none;
+            width: 0;
+        }
+
         body {
             font-family: 'Inter', sans-serif;
-            background: #000000;
-            color: #ffffff;
-            overflow-x: hidden;
-            line-height: 1.5;
+            background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
+            color: white;
+            min-height: 100vh;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        body::-webkit-scrollbar {
+            display: none;
         }
 
         .container {
-            max-width: 375px;
+            width: 100%;
+            max-width: 100%;
             margin: 0 auto;
+            background: #000;
             min-height: 100vh;
-            background: linear-gradient(180deg, #000000 0%, #1a1a1a 100%);
             position: relative;
+            padding-bottom: 80px;
+            overflow-y: scroll;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            overflow-x: hidden;
+        }
+        
+        .container::-webkit-scrollbar {
+            width: 0 !important;
+            display: none !important;
         }
 
         /* Header */
         .header {
-            padding: 20px 20px 16px;
-            background: rgba(255, 255, 255, 0.02);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            background: linear-gradient(135deg, #1a1a1a 0%, #000000 100%);
         }
 
-        /* Navigation Tabs */
+        /* Navigation Tabs in Header */
         .nav-tabs {
             display: flex;
             gap: 8px;
-            justify-content: center;
+            margin-bottom: 20px;
         }
 
         .nav-tab {
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 14px;
+            flex: 1;
+            padding: 8px 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            font-size: 13px;
             font-weight: 500;
-            border: none;
+            color: rgba(255, 255, 255, 0.7);
             cursor: pointer;
             transition: all 0.3s ease;
-            background: rgba(255, 255, 255, 0.05);
-            color: #888888;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-decoration: none;
+            text-align: center;
+            white-space: nowrap;
+            min-width: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
         }
 
         .nav-tab.active {
             background: #ffffff;
             color: #000000;
-            box-shadow: 0 4px 20px rgba(255, 255, 255, 0.3);
+            border-color: #ffffff;
         }
 
         .nav-tab:hover {
             background: rgba(255, 255, 255, 0.1);
-            color: #ffffff;
         }
 
         /* Category Pills */
@@ -72,62 +105,58 @@
             display: flex;
             gap: 8px;
             margin-bottom: 20px;
-            margin-top: 16px;
-            padding: 0 12px;
-            overflow-x: hidden;
-            justify-content: space-between;
-            width: 100%;
-        }
-        
-        .category-pills::-webkit-scrollbar {
-            display: none;
         }
 
         .pill {
-            padding: 8px 0;
-            border-radius: 16px;
-            font-size: 12px;
+            flex: 1;
+            padding: 8px 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            font-size: 13px;
             font-weight: 500;
-            border: none;
+            color: rgba(255, 255, 255, 0.7);
             cursor: pointer;
             transition: all 0.3s ease;
-            white-space: nowrap;
+            text-decoration: none;
             text-align: center;
-            flex: 1;
-            max-width: 105px;
-            width: 32%;
+            white-space: nowrap;
+            min-width: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        .pill.workout {
-            background: rgba(255, 255, 255, 0.1);
-            color: #ffffff;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .pill.nutrition {
+        .pill.active {
             background: #ffffff;
             color: #000000;
-            box-shadow: 0 4px 20px rgba(255, 255, 255, 0.2);
+            border-color: #ffffff;
         }
 
-        .pill.community {
-            background: rgba(255, 255, 255, 0.05);
-            color: #888888;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+        .pill:hover {
+            background: rgba(255, 255, 255, 0.1);
         }
 
         /* Content Section */
         .content {
-            padding: 0 16px;
-            width: 100%;
-            overflow-x: hidden;
+            padding: 20px;
+            height: calc(100vh - 260px);
+            overflow-y: scroll;
+            -webkit-overflow-scrolling: touch;
+            position: relative;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .content::-webkit-scrollbar {
+            display: none;
         }
 
         .section-title {
             font-size: 20px;
-            font-weight: 700;
-            color: #ffffff;
+            font-weight: 600;
             margin-bottom: 20px;
+            color: #fff;
         }
 
         /* Challenge Cards */
@@ -139,19 +168,14 @@
         }
 
         .challenge-card {
-            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-            border-radius: 16px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
             padding: 20px;
             position: relative;
             overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.1);
             transition: all 0.3s ease;
-        }
-
-        .challenge-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 32px rgba(255, 255, 255, 0.1);
-            border-color: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
         }
 
         .challenge-card::before {
@@ -160,8 +184,14 @@
             top: 0;
             left: 0;
             right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, #ff6b6b, #4ecdc4, #45b7d1);
+            height: 3px;
+            background: linear-gradient(90deg, #fff 0%, rgba(255,255,255,0.5) 100%);
+        }
+
+        .challenge-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 15px 40px rgba(255,255,255,0.1);
+            border-color: rgba(255,255,255,0.3);
         }
 
         .challenge-badge {
@@ -187,7 +217,7 @@
 
         .challenge-subtitle {
             font-size: 14px;
-            color: #888888;
+            color: rgba(255,255,255,0.7);
             margin-bottom: 16px;
         }
 
@@ -195,8 +225,8 @@
             background: #ffffff;
             color: #000000;
             border: none;
-            padding: 10px 20px;
-            border-radius: 25px;
+            padding: 8px 16px;
+            border-radius: 20px;
             font-size: 12px;
             font-weight: 600;
             cursor: pointer;
@@ -206,26 +236,26 @@
         }
 
         .see-guide-btn:hover {
-            background: #f0f0f0;
             transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(255,255,255,0.3);
         }
 
         /* Bottom Navigation */
         .bottom-nav {
             position: fixed;
             bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
+            left: 0;
+            right: 0;
             width: 100%;
-            max-width: 375px;
             background: rgba(0, 0, 0, 0.95);
             backdrop-filter: blur(20px);
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 12px 20px 20px;
-            border-radius: 20px 20px 0 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 12px 20px;
+            padding-bottom: calc(12px + env(safe-area-inset-bottom, 0));
+            z-index: 100;
         }
-
-        .bottom-nav-content {
+        
+        .nav-items {
             display: flex;
             justify-content: space-around;
             align-items: center;
@@ -236,51 +266,92 @@
             flex-direction: column;
             align-items: center;
             gap: 4px;
+            color: rgba(255, 255, 255, 0.5);
             cursor: pointer;
             transition: all 0.3s ease;
-            opacity: 0.6;
+            text-decoration: none;
+            flex: 1;
         }
 
         .nav-item.active {
-            opacity: 1;
+            color: #ffffff;
+        }
+
+        .nav-item:hover {
+            color: #ffffff;
+            transform: translateY(-2px);
         }
 
         .nav-icon {
-            width: 20px;
-            height: 20px;
+            font-size: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 16px;
-            color: #ffffff;
+            opacity: 0.7;
         }
 
         .nav-item.active .nav-icon {
-            color: #ffffff;
-            transform: scale(1.2);
+            opacity: 1;
         }
 
         .nav-label {
             font-size: 10px;
-            color: #ffffff;
             font-weight: 500;
         }
 
-        /* Responsive adjustments */
+        /* Responsive Design */
         @media (max-width: 375px) {
             .container {
                 max-width: 100%;
+                min-height: 100vh;
+                padding: 0;
+            }
+            
+            .header {
+                padding: 15px;
+            }
+            
+            .nav-tabs, .category-pills {
+                gap: 6px;
+                margin-bottom: 15px;
+            }
+            
+            .nav-tab, .pill {
+                padding: 6px 8px;
+                font-size: 12px;
+            }
+            
+            .content {
+                padding: 15px;
+                height: calc(100vh - 240px);
+            }
+            
+            .section-title {
+                font-size: 18px;
+                margin-bottom: 15px;
+            }
+            
+            .challenge-card {
+                padding: 15px;
+            }
+            
+            .challenge-title {
+                font-size: 14px;
+            }
+            
+            .challenge-subtitle {
+                font-size: 12px;
             }
             
             .bottom-nav {
                 width: 100%;
+                padding: 8px 0 calc(8px + env(safe-area-inset-bottom, 0));
             }
-        }
-
-        /* Smooth scrolling */
-        .content {
-            scroll-behavior: smooth;
-            padding-bottom: 140px;
+            
+            .see-guide-btn {
+                padding: 6px 12px;
+                font-size: 11px;
+            }
         }
 
         /* Animation */
@@ -310,21 +381,21 @@
         <div class="header">
             <!-- Navigation Tabs -->
             <div class="nav-tabs">
-                <a href="Main.html" class="nav-tab" style="text-decoration: none;">📊 Main</a>
-                <a href="SummaryWorkout.html" class="nav-tab" style="text-decoration: none;">📈 Summary</a>
-                <a href="GuideWorkout.html" class="nav-tab active" style="text-decoration: none;">📖 Guide</a>
+                <a href="Main.html" class="nav-tab">📊 Main</a>
+                <a href="SummaryWorkout.html" class="nav-tab">📈 Summary</a>
+                <div class="nav-tab active">📖 Guide</div>
+            </div>
+
+            <!-- Category Pills -->
+            <div class="category-pills">
+                <a href="GuideWorkout.html" class="pill">Work out</a>
+                <div class="pill active">Nutrition</div>
+                <a href="GuideCommunity.html" class="pill">Community</a>
             </div>
         </div>
 
         <!-- Content -->
         <div class="content">
-            <!-- Category Pills -->
-            <div class="category-pills">
-                <button class="pill workout">Work out</button>
-                <button class="pill nutrition">Nutrition</button>
-                <a href="GuideCommunity.html" class="pill community" style="text-decoration: none;">Community</a>
-            </div>
-
             <h2 class="section-title">Recommend</h2>
             
             <!-- Challenge Cards -->
@@ -354,26 +425,26 @@
 
         <!-- Bottom Navigation -->
         <div class="bottom-nav">
-            <div class="bottom-nav-content">
-                <a href="Main.html" class="nav-item active" style="text-decoration: none;">
+            <div class="nav-items">
+                <a href="Main.html" class="nav-item">
                     <div class="nav-icon">🏠</div>
-                    <span class="nav-label">Home</span>
+                    <div class="nav-label">Home</div>
                 </a>
-                <a href="Chatbot.html" class="nav-item" style="text-decoration: none;">
+                <a href="Chatbot.html" class="nav-item">
                     <div class="nav-icon">🤖</div>
-                    <span class="nav-label">Chatbot</span>
+                    <div class="nav-label">Chatbot</div>
                 </a>
-                <a href="PoseSelect.html" class="nav-item" style="text-decoration: none;">
+                <a href="PoseSelect.html" class="nav-item">
                     <div class="nav-icon">💪</div>
-                    <span class="nav-label">Workout</span>
+                    <div class="nav-label">Workout</div>
                 </a>
-                <a href="Notification.html" class="nav-item" style="text-decoration: none;">
+                <a href="Notification.html" class="nav-item">
                     <div class="nav-icon">🔔</div>
-                    <span class="nav-label">Notification</span>
+                    <div class="nav-label">Notification</div>
                 </a>
-                <a href="Profile.html" class="nav-item" style="text-decoration: none;">
+                <a href="Profile.html" class="nav-item">
                     <div class="nav-icon">👤</div>
-                    <span class="nav-label">Profile</span>
+                    <div class="nav-label">Profile</div>
                 </a>
             </div>
         </div>
@@ -390,9 +461,7 @@
 
         document.querySelectorAll('.pill').forEach(pill => {
             pill.addEventListener('click', function() {
-                document.querySelectorAll('.pill').forEach(p => {
-                    p.className = 'pill ' + p.className.split(' ')[1];
-                });
+                document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
                 this.classList.add('active');
             });
         });
@@ -411,6 +480,17 @@
                 setTimeout(() => {
                     this.style.transform = 'translateY(-2px)';
                 }, 150);
+            });
+        });
+
+        // Animate cards on load
+        window.addEventListener('load', function() {
+            const cards = document.querySelectorAll('.challenge-card');
+            cards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 100);
             });
         });
     </script>
