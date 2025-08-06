@@ -1,649 +1,643 @@
 <!DOCTYPE html>
-<html lang="th">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fitness Tracker</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%);
-            color: #ffffff;
-            overflow-x: hidden;
-            min-height: 100vh;
-        }
-
-        .app-container {
-            width: 100%;
-            max-width: 100%;
-            margin: 0 auto;
-            background: #000000;
-            min-height: 100vh;
-            position: relative;
-            overflow: hidden;
-            padding-bottom: 80px;
-        }
-
-        /* Header */
-        .header {
-            padding: 20px;
-            background: linear-gradient(135deg, #1a1a1a 0%, #000000 100%);
-        }
-
-        .date-selector {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 20px;
-            overflow-x: auto;
-            padding-bottom: 5px;
-        }
-
-        .date-pill {
-            min-width: 50px;
-            padding: 8px 12px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 16px;
-            text-align: center;
-            font-size: 12px;
-            font-weight: 500;
-            color: rgba(255, 255, 255, 0.7);
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-
-        .date-pill.active {
-            background: #ffffff;
-            color: #000000;
-            border-color: #ffffff;
-            transform: scale(1.05);
-        }
-
-        .date-pill:hover {
-            background: rgba(255, 255, 255, 0.1);
-            transform: translateY(-2px);
-        }
-
-        /* Navigation */
-        .nav-tabs {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 20px;
-        }
-
-        .nav-tab {
-            flex: 1;
-            padding: 8px 8px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            font-size: 13px;
-            font-weight: 500;
-            color: rgba(255, 255, 255, 0.7);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            text-align: center;
-            white-space: nowrap;
-            min-width: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 4px;
-        }
-
-        .nav-tab.active {
-            background: #ffffff;
-            color: #000000;
-            border-color: #ffffff;
-        }
-
-        .nav-tab:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        /* Progress Bar */
-        .progress-container {
-            margin-bottom: 25px;
-        }
-
-        .daily-goal {
-            font-size: 12px;
-            color: rgba(255, 255, 255, 0.6);
-            margin-bottom: 8px;
-        }
-
-        .progress-bar {
-            height: 6px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .progress-fill {
-            height: 100%;
-            width: 65%;
-            background: linear-gradient(90deg, #ffffff 0%, #f0f0f0 100%);
-            border-radius: 10px;
-            transition: width 0.3s ease;
-            animation: progressGlow 2s ease-in-out infinite alternate;
-        }
-
-        @keyframes progressGlow {
-            0% { box-shadow: 0 0 5px rgba(255, 255, 255, 0.3); }
-            100% { box-shadow: 0 0 15px rgba(255, 255, 255, 0.6); }
-        }
-
-        .goal-text {
-            font-size: 14px;
-            color: #ffffff;
-            margin-top: 8px;
-            font-weight: 500;
-        }
-
-        /* Main Content */
-        .main-content {
-            padding: 0 20px;
-        }
-
-        /* Metrics Grid */
-        .metrics-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 25px;
-        }
-
-        .metric-card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 16px;
-            padding: 20px;
-            position: relative;
-            backdrop-filter: blur(10px);
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-
-        .metric-card:hover {
-            transform: translateY(-4px);
-            background: rgba(255, 255, 255, 0.08);
-            border-color: rgba(255, 255, 255, 0.2);
-            box-shadow: 0 10px 30px rgba(255, 255, 255, 0.1);
-        }
-
-        .metric-card h3 {
-            font-size: 14px;
-            color: rgba(255, 255, 255, 0.7);
-            margin-bottom: 8px;
-            font-weight: 500;
-        }
-
-        .metric-value {
-            font-size: 24px;
-            font-weight: 700;
-            color: #ffffff;
-            margin-bottom: 4px;
-        }
-
-        .metric-unit {
-            font-size: 12px;
-            color: rgba(255, 255, 255, 0.5);
-            font-weight: 400;
-        }
-
-        /* Fat Percentage Card */
-        .fat-card {
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .fat-circle {
-            width: 80px;
-            height: 80px;
-            border: 3px solid rgba(255, 255, 255, 0.2);
-            border-radius: 50%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            margin-bottom: 10px;
-        }
-
-        .fat-circle::before {
-            content: '';
-            position: absolute;
-            width: 80px;
-            height: 80px;
-            border: 3px solid transparent;
-            border-top: 3px solid #ffffff;
-            border-radius: 50%;
-            transform: rotate(45deg);
-        }
-
-        /* Action Buttons */
-        .action-buttons {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            margin-bottom: 25px;
-        }
-
-        .action-btn {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 16px 20px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 16px;
-            color: #ffffff;
-            text-decoration: none;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-
-        .action-btn:hover {
-            background: rgba(255, 255, 255, 0.1);
-            transform: translateX(4px);
-            border-color: rgba(255, 255, 255, 0.2);
-        }
-
-        .action-icon {
-            width: 32px;
-            height: 32px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 16px;
-        }
-
-        /* Chart Container */
-        .chart-container {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 20px;
-            padding: 20px;
-            margin-bottom: 25px;
-            backdrop-filter: blur(10px);
-        }
-
-        .chart-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .chart-title {
-            font-size: 16px;
-            font-weight: 600;
-            color: #ffffff;
-        }
-
-        .chart-period {
-            font-size: 12px;
-            color: rgba(255, 255, 255, 0.6);
-            background: rgba(255, 255, 255, 0.05);
-            padding: 4px 12px;
-            border-radius: 8px;
-        }
-
-        /* Chart Area */
-        .chart-area {
-            height: 180px;
-            position: relative;
-            background: rgba(255, 255, 255, 0.02);
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 15px;
-        }
-
-        .chart-grid {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-image: 
-                linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
-            background-size: 40px 30px;
-        }
-
-        .chart-line {
-            position: absolute;
-            bottom: 20px;
-            left: 20px;
-            right: 20px;
-            height: 2px;
-            background: linear-gradient(90deg, rgba(255, 255, 255, 0.2) 0%, #ffffff 50%, rgba(255, 255, 255, 0.2) 100%);
-            border-radius: 2px;
-        }
-
-        .chart-labels {
-            display: flex;
-            justify-content: space-between;
-            font-size: 10px;
-            color: rgba(255, 255, 255, 0.5);
-        }
-
-        /* Bottom Navigation */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            width: 100%;
-            background: rgba(0, 0, 0, 0.95);
-            backdrop-filter: blur(20px);
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-            padding: 12px 20px;
-            padding-bottom: calc(12px + env(safe-area-inset-bottom, 0));
-            z-index: 100;
-        }
-        
-        .nav-items {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 100%;
-            gap: 8px;
-        }
-
-        .nav-items {
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-        }
-
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-            color: rgba(255, 255, 255, 0.5);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            flex: 1;
-        }
-
-        .nav-item.active {
-            color: #ffffff;
-        }
-
-        .nav-item:hover {
-            color: #ffffff;
-            transform: translateY(-2px);
-        }
-
-        .nav-icon {
-            font-size: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0.7;
-        }
-
-        .nav-item.active .nav-icon {
-            opacity: 1;
-        }
-
-        .nav-label {
-            font-size: 10px;
-            font-weight: 500;
-        }
-
-        /* Animations */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .metric-card, .action-btn, .chart-container {
-            animation: fadeInUp 0.6s ease forwards;
-        }
-
-        .metric-card:nth-child(2) { animation-delay: 0.1s; }
-        .metric-card:nth-child(3) { animation-delay: 0.2s; }
-        .metric-card:nth-child(4) { animation-delay: 0.3s; }
-
-        /* Responsive */
-        @media (max-width: 375px) {
-            .app-container {
-                max-width: 100%;
-            }
-            
-            .bottom-nav {
-                width: 100%;
-            }
-        }
-
-        /* Scrollbar */
-        ::-webkit-scrollbar {
-            width: 2px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.05);
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 1px;
-        }
-    </style>
-</head>
-<body>
-    <div class="app-container">
-        <!-- Header -->
-        <div class="header">
-            <!-- Navigation Tabs -->
-            <div class="nav-tabs">
-                <div class="nav-tab active">📊 Main</div>
-                <a href="SummaryWorkout.html" class="nav-tab">📈 Summary</a>
-                <a href="GuideWorkout.html" class="nav-tab">📖 Guide</a>
-            </div>
-
-            <!-- Date Selector -->
-            <div class="date-selector">
-                <div class="date-pill">31<br>Sun</div>
-                <div class="date-pill">1<br>Mon</div>
-                <div class="date-pill">2<br>Tue</div>
-                <div class="date-pill">3<br>Wed</div>
-                <div class="date-pill">4<br>Thu</div>
-                <div class="date-pill active">5<br>Fri</div>
-            </div>
-
-            <!-- Progress Bar -->
-            <div class="progress-container">
-                <div class="daily-goal">Daily goal</div>
-                <div class="progress-bar">
-                    <div class="progress-fill"></div>
-                </div>
-                <div class="goal-text">500 cal Burn</div>
-            </div>
-        </div>
-
-        <!-- Main Content -->
-        <div class="main-content">
-            <!-- Metrics Grid -->
-            <div class="metrics-grid">
-                <div class="metric-card">
-                    <h3>Heart Rate</h3>
-                    <div class="metric-value">105</div>
-                    <div class="metric-unit">bpm</div>
-                </div>
-
-                <div class="metric-card">
-                    <h3>Sleep</h3>
-                    <div class="metric-value">8h 3m</div>
-                    <div class="metric-unit">last night</div>
-                </div>
-
-                <div class="metric-card">
-                    <h3>Intake</h3>
-                    <div class="metric-value">1,240</div>
-                    <div class="metric-unit">kcal</div>
-                </div>
-
-                <div class="metric-card fat-card">
-                    <h3>Body Fat</h3>
-                    <div class="fat-circle">
-                        <div class="metric-value">10%</div>
-                        <div class="metric-unit">Fat</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Action Buttons -->
-            <div class="action-buttons">
-                <a href="MainAlert.html" class="action-btn">
-                    <span>🏋️ Add Workout Alert</span>
-                    <div class="action-icon">+</div>
-                </a>
-                <div class="action-btn">
-                    <span>🍽️ Add Food</span>
-                    <div class="action-icon">+</div>
-                </div>
-            </div>
-
-            <!-- Chart Container -->
-            <div class="chart-container">
-                <div class="chart-header">
-                    <div>
-                        <div class="chart-title">Daily Summary</div>
-                        <div style="font-size: 14px; color: rgba(255, 255, 255, 0.7); margin-top: 4px;">Work Out</div>
-                    </div>
-                    <div class="chart-period">Daily</div>
-                </div>
-                
-                <div class="chart-area">
-                    <div class="chart-grid"></div>
-                    <div class="chart-line"></div>
-                </div>
-                
-                <div class="chart-labels">
-                    <span>11:00</span>
-                    <span>12:00</span>
-                    <span>13:00</span>
-                    <span>14:00</span>
-                    <span>15:00</span>
-                    <span>16:00</span>
-                    <span>17:00</span>
-                    <span>18:00</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Bottom Navigation -->
-        <div class="bottom-nav">
-            <div class="nav-items">
-                <a href="Main.html" class="nav-item active">
-                    <div class="nav-icon">🏠</div>
-                    <div class="nav-label">Home</div>
-                </a>
-                <a href="Chatbot.html" class="nav-item active">
-                    <div class="nav-icon">🤖</div>
-                    <div class="nav-label">Chatbot</div>
-                </a>
-                <a href="PoseSelect.html" class="nav-item active">
-                    <div class="nav-icon">💪</div>
-                    <div class="nav-label">Workout</div>
-                </a>
-                <a href="Notification.html" class="nav-item active">
-                    <div class="nav-icon">🔔</div>
-                    <div class="nav-label">Notification</div>
-                </a>
-                <a href="Profile.html" class="nav-item active">
-                    <div class="nav-icon">👤</div>
-                    <div class="nav-label">Profile</div>
-                </a>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        // Add interactive functionality
-        document.addEventListener('DOMContentLoaded', function() {
-            // Date selector functionality
-            const datePills = document.querySelectorAll('.date-pill');
-            datePills.forEach(pill => {
-                pill.addEventListener('click', function() {
-                    datePills.forEach(p => p.classList.remove('active'));
-                    this.classList.add('active');
-                });
-            });
-
-            // Navigation tabs functionality
-            const navTabs = document.querySelectorAll('.nav-tab');
-            navTabs.forEach(tab => {
-                tab.addEventListener('click', function() {
-                    navTabs.forEach(t => t.classList.remove('active'));
-                    this.classList.add('active');
-                });
-            });
-
-            // Bottom navigation functionality
-            const navItems = document.querySelectorAll('.nav-item');
-            const currentPath = window.location.pathname.split('/').pop();
-            navItems.forEach(item => {
-                if (item.getAttribute('href') === currentPath) {
-                    item.classList.add('active');
-                }
-            });
-
-            // Metric cards hover effect
-            const metricCards = document.querySelectorAll('.metric-card');
-            metricCards.forEach(card => {
-                card.addEventListener('mouseenter', function() {
-                    this.style.transform = 'translateY(-8px) scale(1.02)';
-                });
-                
-                card.addEventListener('mouseleave', function() {
-                    this.style.transform = 'translateY(0) scale(1)';
-                });
-            });
-
-            // Action buttons functionality
-            const actionBtns = document.querySelectorAll('.action-btn');
-            actionBtns.forEach(btn => {
-                btn.addEventListener('click', function() {
-                    this.style.transform = 'translateX(8px) scale(0.98)';
-                    setTimeout(() => {
-                        this.style.transform = 'translateX(0) scale(1)';
-                    }, 150);
-                });
-            });
-
-            // Progress bar animation
-            const progressFill = document.querySelector('.progress-fill');
-            setTimeout(() => {
-                progressFill.style.width = '65%';
-            }, 500);
-        });
-    </script>
-</body>
-</html>
+  <html lang="th">
+  <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Fitness Tracker</title>
+      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+      <style>
+          * {
+              margin: 0;
+              padding: 0;
+              box-sizing: border-box;
+          }
+
+          body {
+              font-family: 'Inter', sans-serif;
+              background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%);
+              color: #ffffff;
+              overflow-x: hidden;
+              min-height: 100vh;
+          }
+
+          .app-container {
+              width: 100%;
+              max-width: 100%;
+              margin: 0 auto;
+              background: #000000;
+              min-height: 100vh;
+              position: relative;
+              overflow: hidden;
+              padding-bottom: 80px;
+          }
+
+          /* Header */
+          .header {
+              padding: 20px;
+              background: linear-gradient(135deg, #1a1a1a 0%, #000000 100%);
+          }
+
+          .date-selector {
+              display: flex;
+              gap: 8px;
+              margin-bottom: 20px;
+              overflow-x: auto;
+              padding-bottom: 5px;
+          }
+
+          .date-pill {
+              min-width: 50px;
+              padding: 8px 12px;
+              background: rgba(255, 255, 255, 0.05);
+              border: 1px solid rgba(255, 255, 255, 0.1);
+              border-radius: 16px;
+              text-align: center;
+              font-size: 12px;
+              font-weight: 500;
+              color: rgba(255, 255, 255, 0.7);
+              transition: all 0.3s ease;
+              cursor: pointer;
+          }
+
+          .date-pill.active {
+              background: #ffffff;
+              color: #000000;
+              border-color: #ffffff;
+              transform: scale(1.05);
+          }
+
+          .date-pill:hover {
+              background: rgba(255, 255, 255, 0.1);
+              transform: translateY(-2px);
+          }
+
+          /* Navigation */
+          .nav-tabs {
+              display: flex;
+              gap: 8px;
+              margin-bottom: 20px;
+          }
+
+          .nav-tab {
+              flex: 1;
+              padding: 8px 8px;
+              background: rgba(255, 255, 255, 0.05);
+              border: 1px solid rgba(255, 255, 255, 0.1);
+              border-radius: 12px;
+              font-size: 13px;
+              font-weight: 500;
+              color: rgba(255, 255, 255, 0.7);
+              cursor: pointer;
+              transition: all 0.3s ease;
+              text-decoration: none;
+              text-align: center;
+              white-space: nowrap;
+              min-width: 0;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              gap: 4px;
+          }
+
+          .nav-tab.active {
+              background: #ffffff;
+              color: #000000;
+              border-color: #ffffff;
+          }
+
+          .nav-tab:hover {
+              background: rgba(255, 255, 255, 0.1);
+          }
+
+          /* Progress Bar */
+          .progress-container {
+              margin-bottom: 25px;
+          }
+
+          .daily-goal {
+              font-size: 12px;
+              color: rgba(255, 255, 255, 0.6);
+              margin-bottom: 8px;
+          }
+
+          .progress-bar {
+              height: 6px;
+              background: rgba(255, 255, 255, 0.1);
+              border-radius: 10px;
+              overflow: hidden;
+              position: relative;
+          }
+
+          .progress-fill {
+              height: 100%;
+              width: 65%;
+              background: linear-gradient(90deg, #ffffff 0%, #f0f0f0 100%);
+              border-radius: 10px;
+              transition: width 0.3s ease;
+              animation: progressGlow 2s ease-in-out infinite alternate;
+          }
+
+          @keyframes progressGlow {
+              0% { box-shadow: 0 0 5px rgba(255, 255, 255, 0.3); }
+              100% { box-shadow: 0 0 15px rgba(255, 255, 255, 0.6); }
+          }
+
+          .goal-text {
+              font-size: 14px;
+              color: #ffffff;
+              margin-top: 8px;
+              font-weight: 500;
+          }
+
+          /* Main Content */
+          .main-content {
+              padding: 0 20px;
+          }
+
+          /* Metrics Grid */
+          .metrics-grid {
+              display: grid;
+              grid-template-columns: 1fr 1fr;
+              gap: 15px;
+              margin-bottom: 25px;
+          }
+
+          .metric-card {
+              background: rgba(255, 255, 255, 0.03);
+              border: 1px solid rgba(255, 255, 255, 0.08);
+              border-radius: 16px;
+              padding: 20px;
+              position: relative;
+              backdrop-filter: blur(10px);
+              transition: all 0.3s ease;
+              cursor: pointer;
+          }
+
+          .metric-card:hover {
+              transform: translateY(-4px);
+              background: rgba(255, 255, 255, 0.08);
+              border-color: rgba(255, 255, 255, 0.2);
+              box-shadow: 0 10px 30px rgba(255, 255, 255, 0.1);
+          }
+
+          .metric-card h3 {
+              font-size: 14px;
+              color: rgba(255, 255, 255, 0.7);
+              margin-bottom: 8px;
+              font-weight: 500;
+          }
+
+          .metric-value {
+              font-size: 24px;
+              font-weight: 700;
+              color: #ffffff;
+              margin-bottom: 4px;
+          }
+
+          .metric-unit {
+              font-size: 12px;
+              color: rgba(255, 255, 255, 0.5);
+              font-weight: 400;
+          }
+          
+          /* New CSS for BMI card */
+          .bmi-card {
+              grid-column: span 2;
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              justify-content: center;
+          }
+
+          /* Fat Percentage Card */
+          .fat-card {
+              position: relative;
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              justify-content: center;
+          }
+
+          .fat-circle {
+              width: 80px;
+              height: 80px;
+              border: 3px solid rgba(255, 255, 255, 0.2);
+              border-radius: 50%;
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              justify-content: center;
+              position: relative;
+              margin-bottom: 10px;
+          }
+
+          .fat-circle::before {
+              content: '';
+              position: absolute;
+              width: 80px;
+              height: 80px;
+              border: 3px solid transparent;
+              border-top: 3px solid #ffffff;
+              border-radius: 50%;
+              transform: rotate(45deg);
+          }
+
+          /* Action Buttons */
+          .action-buttons {
+              display: flex;
+              flex-direction: column;
+              gap: 12px;
+              margin-bottom: 25px;
+          }
+
+          .action-btn {
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              padding: 16px 20px;
+              background: rgba(255, 255, 255, 0.05);
+              border: 1px solid rgba(255, 255, 255, 0.1);
+              border-radius: 16px;
+              color: #ffffff;
+              text-decoration: none;
+              font-weight: 500;
+              transition: all 0.3s ease;
+              cursor: pointer;
+          }
+
+          .action-btn:hover {
+              background: rgba(255, 255, 255, 0.1);
+              transform: translateX(4px);
+              border-color: rgba(255, 255, 255, 0.2);
+          }
+
+          .action-icon {
+              width: 32px;
+              height: 32px;
+              background: rgba(255, 255, 255, 0.1);
+              border-radius: 50%;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              font-size: 16px;
+          }
+
+          /* Chart Container */
+          .chart-container {
+              background: rgba(255, 255, 255, 0.03);
+              border: 1px solid rgba(255, 255, 255, 0.08);
+              border-radius: 20px;
+              padding: 20px;
+              margin-bottom: 25px;
+              backdrop-filter: blur(10px);
+          }
+
+          .chart-header {
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              margin-bottom: 20px;
+          }
+
+          .chart-title {
+              font-size: 16px;
+              font-weight: 600;
+              color: #ffffff;
+          }
+
+          .chart-period {
+              font-size: 12px;
+              color: rgba(255, 255, 255, 0.6);
+              background: rgba(255, 255, 255, 0.05);
+              padding: 4px 12px;
+              border-radius: 8px;
+          }
+
+          /* Chart Area */
+          .chart-area {
+              height: 180px;
+              position: relative;
+              background: rgba(255, 255, 255, 0.02);
+              border-radius: 12px;
+              padding: 20px;
+              margin-bottom: 15px;
+          }
+
+          .chart-grid {
+              position: absolute;
+              top: 0;
+              left: 0;
+              right: 0;
+              bottom: 0;
+              background-image:
+                  linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+                  linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+              background-size: 40px 30px;
+          }
+
+          .chart-line {
+              position: absolute;
+              bottom: 20px;
+              left: 20px;
+              right: 20px;
+              height: 2px;
+              background: linear-gradient(90deg, rgba(255, 255, 255, 0.2) 0%, #ffffff 50%, rgba(255, 255, 255, 0.2) 100%);
+              border-radius: 2px;
+          }
+
+          .chart-labels {
+              display: flex;
+              justify-content: space-between;
+              font-size: 10px;
+              color: rgba(255, 255, 255, 0.5);
+          }
+
+          /* Bottom Navigation */
+          .bottom-nav {
+              position: fixed;
+              bottom: 0;
+              left: 0;
+              right: 0;
+              width: 100%;
+              background: rgba(0, 0, 0, 0.95);
+              backdrop-filter: blur(20px);
+              border-top: 1px solid rgba(255, 255, 255, 0.05);
+              padding: 12px 20px;
+              padding-bottom: calc(12px + env(safe-area-inset-bottom, 0));
+              z-index: 100;
+          }
+
+          .nav-items {
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              width: 100%;
+              gap: 8px;
+          }
+
+          .nav-items {
+              display: flex;
+              justify-content: space-around;
+              align-items: center;
+          }
+
+          .nav-item {
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              gap: 4px;
+              color: rgba(255, 255, 255, 0.5);
+              cursor: pointer;
+              transition: all 0.3s ease;
+              text-decoration: none;
+              flex: 1;
+          }
+
+          .nav-item.active {
+              color: #ffffff;
+          }
+
+          .nav-item:hover {
+              color: #ffffff;
+              transform: translateY(-2px);
+          }
+
+          .nav-icon {
+              font-size: 20px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              opacity: 0.7;
+          }
+
+          .nav-item.active .nav-icon {
+              opacity: 1;
+          }
+
+          .nav-label {
+              font-size: 10px;
+              font-weight: 500;
+          }
+
+          /* Animations */
+          @keyframes fadeInUp {
+              from {
+                  opacity: 0;
+                  transform: translateY(20px);
+              }
+              to {
+                  opacity: 1;
+                  transform: translateY(0);
+              }
+          }
+
+          .metric-card, .action-btn, .chart-container {
+              animation: fadeInUp 0.6s ease forwards;
+          }
+
+          .metric-card:nth-child(2) { animation-delay: 0.1s; }
+          .metric-card:nth-child(3) { animation-delay: 0.2s; }
+          .metric-card:nth-child(4) { animation-delay: 0.3s; }
+
+          /* Responsive */
+          @media (max-width: 375px) {
+              .app-container {
+                  max-width: 100%;
+              }
+
+              .bottom-nav {
+                  width: 100%;
+              }
+          }
+
+          /* Scrollbar */
+          ::-webkit-scrollbar {
+              width: 2px;
+          }
+
+          ::-webkit-scrollbar-track {
+              background: rgba(255, 255, 255, 0.05);
+          }
+
+          ::-webkit-scrollbar-thumb {
+              background: rgba(255, 255, 255, 0.2);
+              border-radius: 1px;
+          }
+      </style>
+  </head>
+  <body>
+      <div class="app-container">
+          <div class="header">
+              <div class="nav-tabs">
+                  <div class="nav-tab active">📊 Main</div>
+                  <a href="SummaryWorkout.html" class="nav-tab">📈 Summary</a>
+                  <a href="GuideWorkout.html" class="nav-tab">📖 Guide</a>
+              </div>
+
+              <div class="date-selector">
+                  <div class="date-pill">31<br>Sun</div>
+                  <div class="date-pill">1<br>Mon</div>
+                  <div class="date-pill">2<br>Tue</div>
+                  <div class="date-pill">3<br>Wed</div>
+                  <div class="date-pill">4<br>Thu</div>
+                  <div class="date-pill active">5<br>Fri</div>
+              </div>
+
+              <div class="progress-container">
+                  <div class="daily-goal">Daily goal</div>
+                  <div class="progress-bar">
+                      <div class="progress-fill"></div>
+                  </div>
+                  <div class="goal-text">500 cal Burn</div>
+              </div>
+          </div>
+
+          <div class="main-content">
+              <div class="metrics-grid">
+                  <div class="metric-card bmi-card">
+                      <h3>BMI (Body Mass Index)</h3>
+                      <div class="metric-value">23.88</div>
+                      <div class="metric-unit">kg/m²</div>
+                  </div>
+
+                  <div class="metric-card">
+                      <h3>Intake</h3>
+                      <div class="metric-value">1,240</div>
+                      <div class="metric-unit">kcal</div>
+                  </div>
+
+                  <div class="metric-card fat-card">
+                      <h3>Body Fat</h3>
+                      <div class="fat-circle">
+                          <div class="metric-value">10%</div>
+                          <div class="metric-unit">Fat</div>
+                      </div>
+                  </div>
+              </div>
+
+              <div class="action-buttons">
+                  <a href="MainAlert.html" class="action-btn">
+                      <span>🏋️ Add Workout Alert</span>
+                      <div class="action-icon">+</div>
+                  </a>
+                  <div class="action-btn">
+                      <span>🍽️ Add Food</span>
+                      <div class="action-icon">+</div>
+                  </div>
+              </div>
+
+              <div class="chart-container">
+                  <div class="chart-header">
+                      <div>
+                          <div class="chart-title">Daily Summary</div>
+                          <div style="font-size: 14px; color: rgba(255, 255, 255, 0.7); margin-top: 4px;">Work Out</div>
+                      </div>
+                      <div class="chart-period">Daily</div>
+                  </div>
+
+                  <div class="chart-area">
+                      <div class="chart-grid"></div>
+                      <div class="chart-line"></div>
+                  </div>
+
+                  <div class="chart-labels">
+                      <span>11:00</span>
+                      <span>12:00</span>
+                      <span>13:00</span>
+                      <span>14:00</span>
+                      <span>15:00</span>
+                      <span>16:00</span>
+                      <span>17:00</span>
+                      <span>18:00</span>
+                  </div>
+              </div>
+          </div>
+
+          <div class="bottom-nav">
+              <div class="nav-items">
+                  <a href="Main.html" class="nav-item active">
+                      <div class="nav-icon">🏠</div>
+                      <div class="nav-label">Home</div>
+                  </a>
+                  <a href="Chatbot.html" class="nav-item active">
+                      <div class="nav-icon">🤖</div>
+                      <div class="nav-label">Chatbot</div>
+                  </a>
+                  <a href="PoseSelect.html" class="nav-item active">
+                      <div class="nav-icon">💪</div>
+                      <div class="nav-label">Workout</div>
+                  </a>
+                  <a href="Notification.html" class="nav-item active">
+                      <div class="nav-icon">🔔</div>
+                      <div class="nav-label">Notification</div>
+                  </a>
+                  <a href="Profile.html" class="nav-item active">
+                      <div class="nav-icon">👤</div>
+                      <div class="nav-label">Profile</div>
+                  </a>
+              </div>
+          </div>
+      </div>
+
+      <script>
+          // Add interactive functionality
+          document.addEventListener('DOMContentLoaded', function() {
+              // Date selector functionality
+              const datePills = document.querySelectorAll('.date-pill');
+              datePills.forEach(pill => {
+                  pill.addEventListener('click', function() {
+                      datePills.forEach(p => p.classList.remove('active'));
+                      this.classList.add('active');
+                  });
+              });
+
+              // Navigation tabs functionality
+              const navTabs = document.querySelectorAll('.nav-tab');
+              navTabs.forEach(tab => {
+                  tab.addEventListener('click', function() {
+                      navTabs.forEach(t => t.classList.remove('active'));
+                      this.classList.add('active');
+                  });
+              });
+
+              // Bottom navigation functionality
+              const navItems = document.querySelectorAll('.nav-item');
+              const currentPath = window.location.pathname.split('/').pop();
+              navItems.forEach(item => {
+                  if (item.getAttribute('href') === currentPath) {
+                      item.classList.add('active');
+                  }
+              });
+
+              // Metric cards hover effect
+              const metricCards = document.querySelectorAll('.metric-card');
+              metricCards.forEach(card => {
+                  card.addEventListener('mouseenter', function() {
+                      this.style.transform = 'translateY(-8px) scale(1.02)';
+                  });
+                    
+                  card.addEventListener('mouseleave', function() {
+                      this.style.transform = 'translateY(0) scale(1)';
+                  });
+              });
+
+              // Action buttons functionality
+              const actionBtns = document.querySelectorAll('.action-btn');
+              actionBtns.forEach(btn => {
+                  btn.addEventListener('click', function() {
+                      this.style.transform = 'translateX(8px) scale(0.98)';
+                      setTimeout(() => {
+                          this.style.transform = 'translateX(0) scale(1)';
+                      }, 150);
+                  });
+              });
+
+              // Progress bar animation
+              const progressFill = document.querySelector('.progress-fill');
+              setTimeout(() => {
+                  progressFill.style.width = '65%';
+              }, 500);
+          });
+      </script>
+  </body>
+  </html>
