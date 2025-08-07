@@ -19,7 +19,7 @@ def vector_angle(v1, v2):
     cos_theta = np.dot(v1, v2) / (np.linalg.norm(v1)*np.linalg.norm(v2))
     angle = np.arccos(np.clip(cos_theta, -1.0, 1.0))
     return np.degrees(angle)
-
+#cap = cv2.VideoCapture(0)
 cap = cv2.VideoCapture(r'C:/Users/NBODT/Desktop/DE/data/Back Squat.mp4')
 mp_pose = mp.solutions.pose
 
@@ -117,9 +117,15 @@ with mp_pose.Pose(static_image_mode=False,
                 cv2.putText(image, move_status,
                             (30, 260), cv2.FONT_HERSHEY_SIMPLEX, 0.6,
                             (255, 128, 0), 2, cv2.LINE_AA)
-                cv2.putText(image, pose_status,
-                            (30, 300), cv2.FONT_HERSHEY_SIMPLEX, 0.6,
-                            color, 2, cv2.LINE_AA)
+                if stage != 'up':
+                    # เงื่อนไขแสดงผลฟอร์ม พร้อม pose_status
+                    if pose_status == "Good squat!" and parallel_status == "Parallel":
+                        cv2.putText(image, "Form Good", (30, 300), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 2, cv2.LINE_AA)
+                    else:
+                        cv2.putText(image, "Form Bad", (30, 300), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 2, cv2.LINE_AA)
+                    cv2.putText(image, pose_status, (30, 340), cv2.FONT_HERSHEY_SIMPLEX, 0.7, color, 2, cv2.LINE_AA)
+                else:
+                    cv2.putText(image, "Form normal", (30, 300), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 255), 2, cv2.LINE_AA)
                 # ไม่แสดงข้อความ Legs straight/Legs bent
 
             except Exception as e:

@@ -27,7 +27,7 @@ while cap.isOpened():
     ret, frame = cap.read()
     if not ret:
         break
-    frame = cv2.resize(frame, (640, 480))
+    frame = cv2.resize(frame, (479, 480))
     image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     results = pose.process(image)
     image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
