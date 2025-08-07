@@ -6,7 +6,7 @@ mp_pose = mp.solutions.pose
 pose = mp_pose.Pose()
 mp_drawing = mp.solutions.drawing_utils
 
-cap = cv2.VideoCapture(r'C:/Users/NBODT/Desktop/DE/data/DumbbellLateralRaise.mp4')
+cap = cv2.VideoCapture(r'DumbbellLateralRaise.mp4')
 #cap = cv2.VideoCapture(0)
 count = 0
 direction = 0   # 0 = รอ hand up, 1 = รอ hand down
