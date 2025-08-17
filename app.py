@@ -4,7 +4,7 @@ from RFuntion import gen_res_mongodb, close_mongodb_connection
 
 app = Flask(__name__)
 CORS(app) # อนุญาตให้ Front-end เรียกใช้งานได้ (CORS)
-
+@app.get("/")
 # Endpoint สำหรับการสนทนา
 @app.route('/chat', methods=['POST'])
 def chat():
